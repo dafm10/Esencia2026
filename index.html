@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="description"
+      content="Congreso Esencia 2026, evento nacional para mujeres, organizado por la Iglesia de Dios de la Profecía - COGOP PERÚ"
+    />
+    <link rel="icon" type="image/svg+xml" href="/logo-cogop-transparent.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conferencia Esencia 2026</title>
+  </head>
+  <body>
+    <div id="root">
+      <style>
+        .preloader-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          width: 100vw;
+          background-color: #fdf3f8; /* brand-50 */
+          position: fixed;
+          top: 0;
+          left: 0;
+          z-index: 9999;
+          font-family: system-ui, sans-serif;
+          flex-direction: column;
+          gap: 16px;
+        }
+        .preloader-spinner {
+          width: 48px;
+          height: 48px;
+          border: 4px solid #fbe7f0; /* brand-100 */
+          border-top: 4px solid #c85791; /* brand-600 */
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+        .preloader-text {
+          color: #c85791; /* brand-600 */
+          font-weight: 600;
+          font-size: 14px;
+          letter-spacing: 1px;
+        }
+      </style>
+      <div class="preloader-container">
+        <div class="preloader-spinner"></div>
+        <div class="preloader-text">CARGANDO...</div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

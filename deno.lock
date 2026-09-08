@@ -1,0 +1,51 @@
+{
+  "version": "5",
+  "redirects": {
+    "https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts": "https://esm.sh/@supabase/functions-js@2.112.3/src/edge-runtime.d.ts",
+    "https://esm.sh/@supabase/supabase-js@2": "https://esm.sh/@supabase/supabase-js@2.112.3",
+    "https://esm.sh/@types/qrcode@~1.5.6/index.d.ts": "https://esm.sh/@types/qrcode@1.5.6/index.d.ts",
+    "https://esm.sh/@types/react@~19.0.8/index.d.ts": "https://esm.sh/@types/react@19.0.14/index.d.ts"
+  },
+  "remote": {
+    "https://deno.land/std@0.224.0/encoding/_util.ts": "beacef316c1255da9bc8e95afb1fa56ed69baef919c88dc06ae6cb7a6103d376",
+    "https://deno.land/std@0.224.0/encoding/base64.ts": "dd59695391584c8ffc5a296ba82bcdba6dd8a84d41a6a539fbee8e5075286eaf",
+    "https://esm.sh/@supabase/supabase-js@2.112.3": "f6b9130984301066587e8917dfab3b3d60be47dc966bd3d04c733bc9423c1cf9",
+    "https://esm.sh/pdf-lib@1.17.1": "cf7c5527829cb9bbb3aa20d339c530067441c10eb98880360aea9e77c3c87ff8",
+    "https://esm.sh/qrcode@1.5.3": "56a09b1c1317c4fd6a296695437a365b0613d64e6461d44526b16882417cc5fb",
+    "https://esm.sh/resend@3.2.0": "8086db1739c20d51e77d8ce975ecb660e1ebda45074c04c2ffdef5d7f0f13975"
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@eslint/js@^10.0.1",
+        "npm:@supabase/supabase-js@^2.112.2",
+        "npm:@tailwindcss/vite@^4.3.3",
+        "npm:@types/node@^24.13.3",
+        "npm:@types/qrcode@^1.5.6",
+        "npm:@types/react-dom@^19.2.3",
+        "npm:@types/react@^19.2.17",
+        "npm:@vitejs/plugin-react@^6.0.4",
+        "npm:@yudiel/react-qr-scanner@^2.6.0",
+        "npm:eslint-plugin-react-hooks@^7.1.1",
+        "npm:eslint-plugin-react-refresh@~0.5.3",
+        "npm:eslint@^10.8.0",
+        "npm:framer-motion@^13.1.0",
+        "npm:globals@^17.7.0",
+        "npm:html5-qrcode@^2.3.8",
+        "npm:pdf-lib@^1.17.1",
+        "npm:qrcode@^1.5.4",
+        "npm:react-dom@^19.2.8",
+        "npm:react-icons@^5.7.0",
+        "npm:react-router-dom@^7.18.2",
+        "npm:react@^19.2.8",
+        "npm:recharts@^3.10.1",
+        "npm:supabase@^2.113.0",
+        "npm:tailwindcss@^4.3.3",
+        "npm:typescript-eslint@^8.65.0",
+        "npm:typescript@~6.0.2",
+        "npm:vite@^8.2.0",
+        "npm:xlsx@~0.18.5"
+      ]
+    }
+  }
+}
