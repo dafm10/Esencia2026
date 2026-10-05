@@ -1,0 +1,7 @@
+#!/bin/bash
+# Hook post-commit para guardar la última versión de los archivos de IA
+# por si el usuario cambia a una rama que no los tiene.
+
+if git ls-tree -r HEAD | grep -q -E "skills/|.agents/|GEMINI.md|AGENTS.md"; then
+  git update-ref refs/ai-backup HEAD
+fi

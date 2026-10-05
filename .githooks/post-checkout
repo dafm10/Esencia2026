@@ -1,0 +1,21 @@
+#!/bin/bash
+# Hook post-checkout para proteger los archivos de IA de eliminaciones por checkout
+# Si cambiamos a una rama (como main) que no los tiene, los restauramos.
+
+FILES="skills .agents GEMINI.md AGENTS.md"
+MISSING=0
+
+for f in $FILES; do
+  if [ ! -e "$f" ]; then
+    MISSING=1
+  fi
+done
+
+if [ $MISSING -eq 1 ]; then
+  if git show-ref --verify --quiet refs/ai-backup; then
+    echo "🧙‍♂️ Antigravity: Restaurando archivos de IA en tu entorno local..."
+    git checkout refs/ai-backup -- $FILES 2>/dev/null || true
+    # Evitar que queden en staging automáticamente
+    git reset HEAD -- $FILES 2>/dev/null || true
+  fi
+fi

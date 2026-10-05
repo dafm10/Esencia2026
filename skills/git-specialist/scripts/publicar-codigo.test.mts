@@ -16,13 +16,18 @@ describe('planPublish', () => {
     const plan = planPublish(healthy)
     assert.equal(plan.ok, true)
     assert.deepEqual(plan.steps.slice(0, CHECK_COMMANDS.length), CHECK_COMMANDS)
-    assert.deepEqual(plan.steps.at(-1), ['git', 'push', '-u', 'origin', 'feat/filtro'])
-    assert.equal(plan.steps.flat().some((s) => s === '--force' || s === '-f'), false)
+    assert.deepEqual(plan.steps.at(-3), ['node', 'skills/git-specialist/scripts/strip-ai-files.mts', 'main'])
+    assert.deepEqual(plan.steps.at(-2), ['git', 'push', '-f', 'origin', 'publish_temp:feat/filtro'])
+    assert.deepEqual(plan.steps.at(-1), ['git', 'branch', '-D', 'publish_temp'])
   })
 
   it('omite checks con skipChecks', () => {
     const plan = planPublish({ ...healthy, skipChecks: true })
-    assert.deepEqual(plan.steps, [['git', 'push', '-u', 'origin', 'feat/filtro']])
+    assert.deepEqual(plan.steps, [
+      ['node', 'skills/git-specialist/scripts/strip-ai-files.mts', 'main'],
+      ['git', 'push', '-f', 'origin', 'publish_temp:feat/filtro'],
+      ['git', 'branch', '-D', 'publish_temp']
+    ])
   })
 
   it('falla con árbol sucio', () => {

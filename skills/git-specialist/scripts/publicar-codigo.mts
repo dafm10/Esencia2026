@@ -66,7 +66,9 @@ export function planPublish(input: PublishInput): PublishPlan {
 
   if (errors.length === 0) {
     if (!input.skipChecks) steps.push(...CHECK_COMMANDS)
-    steps.push(['git', 'push', '-u', 'origin', input.branch ?? 'HEAD'])
+    steps.push(['node', 'skills/git-specialist/scripts/strip-ai-files.mts', input.base])
+    steps.push(['git', 'push', '-f', 'origin', `publish_temp:${input.branch ?? 'HEAD'}`])
+    steps.push(['git', 'branch', '-D', 'publish_temp'])
   }
 
   return { ok: errors.length === 0, errors, warnings, steps }
