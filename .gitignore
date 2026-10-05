@@ -31,7 +31,6 @@ supabase/.temp
 supabase/functions/*/node_modules/
 
 # Agentes de IA y Skills
-.agents/
 .gemini/
 .ai/
 
