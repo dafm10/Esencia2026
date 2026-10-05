@@ -114,5 +114,27 @@ supabase functions deploy approve-order
 
 - **Chrome DevTools MCP (`chrome-devtools-mcp`)**:
   - Habilitado para depuración, inspección en vivo de elementos del DOM, monitoreo de errores de consola en el navegador y verificación de estilos responsivos.
+- **Supabase MCP**:
+  - Permite consultar esquemas, tablas y operaciones de base de datos de manera integrada.
 - **Pruebas y Verificación**:
   - Tras cualquier cambio relevante de código, ejecutar `pnpm lint` o `pnpm build` para asegurar que no se introduzcan errores de tipado o regresiones de compilación.
+
+---
+
+## 7. Skills de Antigravity (Directrices de Activación)
+
+El agente debe activar y consultar proactivamente las siguientes skills según el tipo de tarea:
+
+1. **`modern-web-guidance`**:
+   - **Cuándo activar:** Obligatorio para tareas de maquetación HTML/CSS, Tailwind CSS v4, animaciones con Framer Motion, diseño de formularios y componentes de UI. Asegura el uso de APIs y estándares web modernos sin caer en patrones obsoletos.
+2. **`chrome-devtools`**:
+   - **Cuándo activar:** Al depurar errores visuales en runtime, verificar interactividad en `localhost`, capturar screenshots del flujo de registro o inspeccionar errores en la consola y red.
+3. **`a11y-debugging`**:
+   - **Cuándo activar:** Para auditorías de accesibilidad (WCAG/A11y), contrastes de color en el tema oscuro/glassmorphic, navegación accesible por teclado en el formulario por pasos y accesibilidad en el panel `/admin`.
+4. **`debug-optimize-lcp`**:
+   - **Cuándo activar:** En tareas de optimización de rendimiento y Core Web Vitals (LCP, CLS, INP) de la Landing Page pública (`/`) y carga optimizada de imágenes/logos.
+5. **`memory-leak-debugging`**:
+   - **Cuándo activar:** Al depurar o refactorizar el escáner de códigos QR (`@yudiel/react-qr-scanner` o `html5-qrcode`) en `/admin/attendance`, verificando la liberación correcta del stream de la cámara y heap memory.
+6. **`generative_ui`**:
+   - **Cuándo activar:** Para renderizar previsualizaciones interactivas de nuevos componentes de dashboard, widgets de métricas o simulaciones de flujos antes de aplicarlos al código.
+
