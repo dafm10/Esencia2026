@@ -1,0 +1,4 @@
+#!/bin/sh
+# Hook versionado: bloquea push directo/borrado de ramas protegidas. Recibe refs por stdin.
+ROOT="$(git rev-parse --show-toplevel)"
+exec node "$ROOT/skills/git-specialist/scripts/validate-convivencia.mts" --hook pre-push "$@"

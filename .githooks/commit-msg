@@ -1,0 +1,4 @@
+#!/bin/sh
+# Hook versionado: valida el mensaje (Conventional Commits). Ver skills/git-specialist/references/git-hooks.md
+ROOT="$(git rev-parse --show-toplevel)"
+exec node "$ROOT/skills/git-specialist/scripts/validate-commit.mts" "$1"

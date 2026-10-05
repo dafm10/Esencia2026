@@ -1,0 +1,10 @@
+# <tipo>(<alcance>)!: <descripción en minúscula, imperativo, sin punto, ≤ 50 caracteres>
+#
+# Cuerpo (opcional): explica QUÉ y POR QUÉ, no CÓMO. Ajusta a ~72 columnas.
+#
+# Pie (opcional):
+#   BREAKING CHANGE: <qué se rompe y cómo migrar>
+#   Refs: #123
+#
+# Tipos: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+# Referencia: skills/git-specialist/references/git-hooks.md

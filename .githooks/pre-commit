@@ -1,0 +1,6 @@
+#!/bin/sh
+# Hook versionado: archivos en staging + convivencia. Ver skills/git-specialist/references/git-hooks.md
+set -e
+ROOT="$(git rev-parse --show-toplevel)"
+node "$ROOT/skills/git-specialist/scripts/validate-staged.mts"
+node "$ROOT/skills/git-specialist/scripts/validate-convivencia.mts" --hook pre-commit
