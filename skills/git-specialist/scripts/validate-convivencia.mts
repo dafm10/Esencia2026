@@ -114,8 +114,20 @@ export function validatePushRefs(refs: PushRef[], allowProtected = false): Findi
           : `Push directo a "${target}" bloqueado. Publica tu rama y abre un PR.`,
       })
     }
-    if (!ZERO_SHA.test(ref.localSha) && ref.localRef.startsWith('refs/heads/')) {
-      findings.push(...validateBranchName(ref.localRef.replace(/^refs\/heads\//, '')))
+    if (!ZERO_SHA.test(ref.localSha)) {
+      try {
+        const tree = execFileSync('git', ['ls-tree', '-r', ref.localSha], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] })
+        if (/skills\/|\.agents\/|GEMINI\.md|AGENTS\.md/.test(tree)) {
+          findings.push({
+            level: 'error',
+            message: `Intento de subir archivos de IA a "${target}". Usa 'pnpm run publicar' para limpiar el historial automáticamente.`,
+          })
+        }
+      } catch (e) {}
+
+      if (ref.localRef.startsWith('refs/heads/')) {
+        findings.push(...validateBranchName(ref.localRef.replace(/^refs\/heads\//, '')))
+      }
     }
   }
   return findings
