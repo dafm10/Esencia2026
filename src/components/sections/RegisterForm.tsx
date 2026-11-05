@@ -62,10 +62,13 @@ const RegisterForm = () => {
     }
 
     const [isLoading, setIsLoading] = useState(false)
+    const isSubmittingRef = useRef(false)
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault()
+        if (isSubmittingRef.current) return
+        isSubmittingRef.current = true
         setIsLoading(true)
         setMessage(null)
 
@@ -122,6 +125,7 @@ const RegisterForm = () => {
             setMessage({ type: 'error', text: error.message || "Ocurrió un error inesperado al registrarte." })
         } finally {
             setIsLoading(false)
+            isSubmittingRef.current = false
         }
     }
 
@@ -198,9 +202,15 @@ const RegisterForm = () => {
                         type="text"
                         placeholder="DNI*"
                         value={formData.dni}
-                        onChange={(e) => handleChange('dni', e.target.value)}
+                        onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, '');
+                            if (val.length <= 8) {
+                                handleChange('dni', val);
+                            }
+                        }}
                         className={inputStyles}
                         required
+                        maxLength={8}
                     />
 
                     <input
@@ -264,20 +274,24 @@ const RegisterForm = () => {
                         required
                     >
                         <option value="" disabled>Selecciona tu Taller (Día 1)*</option>
-                        {['ADOLESCENTES', 'JÓVENES', 'GENERAL'].map(category => (
-                            <optgroup key={`d1-cat-${category}`} label={category}>
-                                {workshops.filter(w => w.category === category).map((w) => {
-                                    const wName = w.nameDay1 || w.name;
-                                    const count = workshopCounts.day1[wName] || 0;
-                                    const isFull = w.limit !== null && count >= w.limit;
-                                    return (
-                                        <option key={`d1-${w.id}`} value={wName} disabled={isFull}>
-                                            {wName} {isFull ? '(Sala llena)' : ''}
-                                        </option>
-                                    )
-                                })}
-                            </optgroup>
-                        ))}
+                        {['ADOLESCENTES', 'JÓVENES', 'GENERAL'].map(category => {
+                            const availableWorkshops = workshops.filter(w => w.category === category && !w.hideOnDay1);
+                            if (availableWorkshops.length === 0) return null;
+                            return (
+                                <optgroup key={`d1-cat-${category}`} label={category}>
+                                    {availableWorkshops.map((w) => {
+                                        const wName = w.nameDay1 || w.name;
+                                        const count = workshopCounts.day1[wName] || 0;
+                                        const isFull = w.limit !== null && count >= w.limit;
+                                        return (
+                                            <option key={`d1-${w.id}`} value={wName} disabled={isFull}>
+                                                {wName} {isFull ? '(Sala llena)' : ''}
+                                            </option>
+                                        )
+                                    })}
+                                </optgroup>
+                            )
+                        })}
                     </select>
 
                     <div>
@@ -288,20 +302,24 @@ const RegisterForm = () => {
                             required
                         >
                             <option value="" disabled>Selecciona tu Taller (Día 2)*</option>
-                            {['ADOLESCENTES', 'JÓVENES', 'GENERAL'].map(category => (
-                                <optgroup key={`d2-cat-${category}`} label={category}>
-                                    {workshops.filter(w => w.category === category).map((w) => {
-                                        const wName = w.nameDay2 || w.name;
-                                        const count = workshopCounts.day2[wName] || 0;
-                                        const isFull = w.limit !== null && count >= w.limit;
-                                        return (
-                                            <option key={`d2-${w.id}`} value={wName} disabled={isFull}>
-                                                {wName} {isFull ? '(Sala llena)' : ''}
-                                            </option>
-                                        )
-                                    })}
-                                </optgroup>
-                            ))}
+                            {['ADOLESCENTES', 'JÓVENES', 'GENERAL'].map(category => {
+                                const availableWorkshops = workshops.filter(w => w.category === category && !w.hideOnDay2);
+                                if (availableWorkshops.length === 0) return null;
+                                return (
+                                    <optgroup key={`d2-cat-${category}`} label={category}>
+                                        {availableWorkshops.map((w) => {
+                                            const wName = w.nameDay2 || w.name;
+                                            const count = workshopCounts.day2[wName] || 0;
+                                            const isFull = w.limit !== null && count >= w.limit;
+                                            return (
+                                                <option key={`d2-${w.id}`} value={wName} disabled={isFull}>
+                                                    {wName} {isFull ? '(Sala llena)' : ''}
+                                                </option>
+                                            )
+                                        })}
+                                    </optgroup>
+                                )
+                            })}
                         </select>
                     </div>
 

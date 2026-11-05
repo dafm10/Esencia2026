@@ -83,8 +83,9 @@ const Schedule = () => {
                     ))}
                 </div>
                 <div className="mt-12 flex justify-center">
-                    <a href={"#"}
-                        download
+                    <a href="/programa_esencia-2026.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="flex items-center gap-3 rounded-full border-2 border-brand-800 px-8 py-3 text-sm font-semibold uppercase tracking-wide text-brand-800 transition-colors hover:bg-brand-800 hover:text-white">
                         <FaDownload /> Descargar Programa
                     </a>

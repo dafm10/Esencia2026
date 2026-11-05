@@ -52,8 +52,8 @@ const BulkRegisterPage = () => {
 
         const dataSheet = workbook.addWorksheet('DataLists', { state: 'hidden' });
         
-        const workshopNamesD1 = workshops.map(w => w.nameDay1 || w.name);
-        const workshopNamesD2 = workshops.map(w => w.nameDay2 || w.name);
+        const workshopNamesD1 = workshops.filter(w => !w.hideOnDay1).map(w => w.nameDay1 || w.name);
+        const workshopNamesD2 = workshops.filter(w => !w.hideOnDay2).map(w => w.nameDay2 || w.name);
         
         workshopNamesD1.forEach((val, idx) => { dataSheet.getCell(`A${idx + 1}`).value = val; });
         workshopNamesD2.forEach((val, idx) => { dataSheet.getCell(`B${idx + 1}`).value = val; });
@@ -70,6 +70,18 @@ const BulkRegisterPage = () => {
             };
             sheet.getCell(`M${i}`).dataValidation = {
                 type: 'list', allowBlank: true, formulae: ['List_Workshops_D2']
+            };
+            
+            // DNI Validación (máx 8 dígitos)
+            sheet.getCell(`D${i}`).dataValidation = {
+                type: 'textLength',
+                operator: 'lessThanOrEqual',
+                allowBlank: true,
+                showErrorMessage: true,
+                errorStyle: 'error',
+                errorTitle: 'DNI Inválido',
+                error: 'El DNI no puede tener más de 8 caracteres.',
+                formulae: [8]
             };
         }
 
@@ -97,7 +109,18 @@ const BulkRegisterPage = () => {
             if (rowNumber === 1) return; // Skip header
 
             const getVal = (col: number) => {
-                const val = row.getCell(col).value;
+                let val = row.getCell(col).value;
+                if (val && typeof val === 'object') {
+                    if ('richText' in val) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        val = (val as any).richText.map((rt: any) => rt.text).join('');
+                    } else if ('result' in val) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        val = (val as any).result;
+                    } else if (val instanceof Date) {
+                        val = val.toLocaleDateString();
+                    }
+                }
                 return val ? val.toString().trim() : '';
             };
 

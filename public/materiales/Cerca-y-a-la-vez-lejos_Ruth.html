@@ -1,0 +1,2632 @@
+<!DOCTYPE html>
+<!-- saved from url=(0072)file:///C:/Users/Betty/Downloads/TALLER_DIA1_Cerca_y_a_la_vez_lejos.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cerca y a la vez lejos — Día 1</title>
+<style>
+/* ============================================================
+   TALLER "CERCA Y A LA VEZ LEJOS" — DÍA 1
+   Presentación autocontenida. Sin @keyframes, sin CDN.
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg:#17122b;
+  --bg-2:#241a40;
+  --bg-3:#2e2150;
+  --ink:#F7F1E8;
+  --muted:#C3B6D8;
+  --gold:#F2B775;
+  --gold-soft:#F7D4A4;
+  --rose:#E6909B;
+  --teal:#76C5B6;
+  --violet:#A892E0;
+  --line:rgba(247,241,232,.16);
+  --card:rgba(247,241,232,.055);
+  --card-2:rgba(247,241,232,.09);
+
+  --t-eyebrow: 20px;
+  --t-title:   54px;
+  --t-title-xl:76px;
+  --t-sub:     38px;
+  --t-body:    32px;
+  --t-dense:   28.5px;
+  --t-chip:    21.6px;
+}
+
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  font-size:var(--t-body);
+  line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* fondo ambiental */
+#aura{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+   radial-gradient(1100px 760px at 12% 8%, rgba(242,183,117,.16), transparent 62%),
+   radial-gradient(980px 720px at 88% 92%, rgba(230,144,155,.15), transparent 62%),
+   radial-gradient(900px 700px at 70% 12%, rgba(118,197,182,.10), transparent 60%),
+   linear-gradient(160deg,#17122b 0%,#221a3d 48%,#1a1330 100%);
+  transition:opacity 1.2s ease;
+}
+
+/* ---------- estructura ----------
+   Lienzo fijo de 1600x900 que se escala para llenar cualquier
+   pantalla o proyector sin recortar nunca el contenido.        */
+#stage{
+  position:fixed;left:50%;top:50%;width:1600px;height:900px;
+  transform:translate(-50%,-50%) scale(1);transform-origin:center center;
+  z-index:2;
+}
+#deck{position:absolute;inset:0}
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:center;
+  justify-content:safe center;
+  overflow-y:auto;overflow-x:hidden;
+  scrollbar-width:thin;scrollbar-color:rgba(242,183,117,.5) transparent;
+  padding:54px 74px;
+  padding-top:96px;
+  padding-bottom:68px;
+  opacity:0;visibility:hidden;transform:translateY(18px) scale(.995);
+  transition:opacity .5s ease, transform .5s ease, visibility .5s;
+}
+.slide.active{opacity:1;visibility:visible;transform:none}
+.slide.center{align-items:center;text-align:center}
+.wrap{width:100%;max-width:1452px;margin:0 auto}
+
+/* ---------- barra superior ---------- */
+#topbar{
+  position:absolute;top:0;left:0;right:0;z-index:20;
+  display:flex;align-items:center;gap:16px;
+  padding:14px 40px;
+  font-size:var(--t-eyebrow);
+  color:var(--muted);
+  background:linear-gradient(180deg, rgba(23,18,43,.92), rgba(23,18,43,0));
+  pointer-events:none;
+}
+#topbar .brand{letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--gold-soft)}
+#topbar .dot{opacity:.45}
+#chip-mom{
+  padding:5px 14px;border:1px solid var(--line);border-radius:999px;
+  background:var(--card);color:var(--ink);letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+}
+#topbar .spacer{flex:1}
+#counter{font-variant-numeric:tabular-nums;letter-spacing:.06em}
+
+/* ---------- barra de progreso ---------- */
+#progress{position:absolute;bottom:0;left:0;right:0;height:5px;background:rgba(247,241,232,.09);z-index:20}
+#bar{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--rose),var(--violet));transition:width .45s ease}
+
+/* ---------- controles ---------- */
+#dock{position:fixed;bottom:18px;right:20px;z-index:22;display:flex;gap:9px}
+.btn{
+  border:1px solid var(--line);background:rgba(23,18,43,.72);color:var(--ink);
+  font:inherit;font-size:var(--t-eyebrow);font-weight:600;
+  padding:9px 15px;border-radius:12px;cursor:pointer;
+  transition:background .2s ease,border-color .2s ease,transform .15s ease;
+  backdrop-filter:blur(6px);
+}
+.btn:hover{background:var(--card-2);border-color:var(--gold);transform:translateY(-2px)}
+.btn.ghost{opacity:.8}
+
+/* ---------- tipografía ---------- */
+.eyebrow{
+  font-size:var(--t-eyebrow);letter-spacing:.22em;text-transform:uppercase;
+  color:var(--gold);font-weight:700;margin-bottom:18px;
+}
+h1{font-size:var(--t-title-xl);line-height:1.04;font-weight:800;letter-spacing:-.015em}
+h2{font-size:var(--t-title);line-height:1.1;font-weight:800;letter-spacing:-.01em;margin-bottom:26px}
+h3{font-size:var(--t-sub);line-height:1.18;font-weight:700;margin-bottom:14px}
+p{font-size:var(--t-body)}
+.lead{font-size:var(--t-sub);color:var(--ink);line-height:1.32}
+.muted{color:var(--muted)}
+.gold{color:var(--gold)}
+.rose{color:var(--rose)}
+.teal{color:var(--teal)}
+.violet{color:var(--violet)}
+.b{font-weight:800}
+.u{
+  background:linear-gradient(180deg,transparent 62%, rgba(242,183,117,.34) 62%);
+  padding:0 .08em;
+}
+
+/* ---------- tarjetas ---------- */
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:20px;
+  padding:28.8px 32px;
+}
+.card.soft{background:var(--card-2)}
+.card.gold{border-color:rgba(242,183,117,.45);background:rgba(242,183,117,.09)}
+.card.rose{border-color:rgba(230,144,155,.45);background:rgba(230,144,155,.09)}
+.card.teal{border-color:rgba(118,197,182,.45);background:rgba(118,197,182,.09)}
+.card.violet{border-color:rgba(168,146,224,.45);background:rgba(168,146,224,.09)}
+
+.grid{display:grid;gap:20.8px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g-12{grid-template-columns:1fr 1.15fr;align-items:center}
+.g-21{grid-template-columns:1.15fr 1fr;align-items:center}
+
+/* ---------- cita bíblica ---------- */
+.verse{
+  border-left:6px solid var(--gold);
+  background:linear-gradient(90deg, rgba(242,183,117,.14), rgba(242,183,117,.03));
+  border-radius:0 20px 20px 0;
+  padding:35.2px 41.6px;
+  font-size:var(--t-sub);line-height:1.34;font-style:italic;
+}
+.verse .ref{display:block;margin-top:16px;font-style:normal;font-size:var(--t-chip);
+  letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:800}
+
+/* ---------- quote de la ponente / voz ---------- */
+.say{
+  position:relative;font-size:var(--t-sub);line-height:1.34;
+  padding-left:48px;
+}
+.say:before{
+  content:"“";position:absolute;left:0;top:-.22em;
+  font-size:96px;line-height:1;color:var(--gold);opacity:.55;font-family:Georgia,serif;
+}
+
+/* ---------- pasos de revelado ---------- */
+[data-step]{opacity:0;transform:translateY(18px);transition:opacity .55s ease, transform .55s ease}
+[data-step].on{opacity:1;transform:none}
+
+/* ---------- numeritos ---------- */
+.num{
+  flex:0 0 auto;width:54.4px;height:54.4px;
+  border-radius:50%;display:grid;place-items:center;
+  font-weight:800;font-size:27.2px;
+  background:rgba(242,183,117,.16);border:1px solid rgba(242,183,117,.5);color:var(--gold-soft);
+}
+.row{display:flex;gap:20.8px;align-items:flex-start}
+.row.c{align-items:center}
+
+/* ---------- escalera / niveles ---------- */
+.step-card{
+  display:flex;gap:18px;align-items:center;
+  border:1px solid var(--line);border-radius:18px;background:var(--card);
+  padding:24px 27.2px;
+  transition:background .3s ease,border-color .3s ease,transform .3s ease;
+}
+.step-card .tag{font-size:var(--t-chip);letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--gold)}
+.step-card .ph{font-size:var(--t-body);font-weight:700}
+
+/* ---------- comparativa ---------- */
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:19.2px;align-items:stretch}
+.vs .mid{display:grid;place-items:center;font-size:var(--t-chip);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);font-weight:800}
+.pill{
+  display:inline-block;padding:6px 16px;border-radius:999px;font-size:var(--t-chip);
+  font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+}
+.pill.a{background:rgba(230,144,155,.18);color:var(--rose);border:1px solid rgba(230,144,155,.45)}
+.pill.b{background:rgba(118,197,182,.18);color:var(--teal);border:1px solid rgba(118,197,182,.45)}
+.pill.c{background:rgba(242,183,117,.18);color:var(--gold);border:1px solid rgba(242,183,117,.45)}
+
+/* ---------- flujo VER→ESCUCHAR→COMPRENDER→ACOMPAÑAR ---------- */
+.flow{display:flex;align-items:stretch;gap:10px;flex-wrap:nowrap}
+.flow .node{
+  flex:1;text-align:center;border-radius:20px;border:1px solid var(--line);
+  background:var(--card);padding:25.6px 12px;
+}
+.flow .node .ic{font-size:46px;line-height:1;margin-bottom:10px}
+.flow .node .nm{font-size:30px;font-weight:800;letter-spacing:.04em}
+.flow .arr{display:grid;place-items:center;color:var(--gold);font-size:34px;font-weight:800}
+
+/* ---------- listas ---------- */
+ul.clean{list-style:none}
+ul.clean li{position:relative;padding-left:1.5em;margin-bottom:.55em}
+ul.clean li:before{content:"◆";position:absolute;left:0;color:var(--gold);font-size:.7em;top:.35em}
+ul.dash li:before{content:"—";color:var(--rose);font-size:.9em;top:0}
+ul.check li:before{content:"✓";color:var(--teal);font-weight:800;top:0}
+ul.cross li:before{content:"✕";color:var(--rose);font-weight:800;top:0}
+ul.tight li{margin-bottom:.3em}
+
+/* ---------- mapa de relaciones (SVG interactivo) ---------- */
+#mapaWrap{display:grid;grid-template-columns:1fr 1.02fr;gap:32px;align-items:center}
+#mapa{width:100%;height:auto;max-height:612px;cursor:pointer}
+#mapa .ring{transition:fill .3s ease,stroke .3s ease,opacity .3s ease}
+#mapa .ring:hover{opacity:.92}
+.lvl{
+  border:1px solid var(--line);border-radius:16px;background:var(--card);
+  padding:19.2px 22.4px;
+  cursor:pointer;transition:background .25s ease,border-color .25s ease,transform .25s ease;
+  display:flex;gap:16px;align-items:flex-start;
+}
+.lvl:hover{transform:translateX(4px)}
+.lvl .no{
+  flex:0 0 auto;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
+  font-weight:800;font-size:22px;background:rgba(247,241,232,.1);border:1px solid var(--line)
+}
+.lvl .nmm{font-weight:800;font-size:29.6px;line-height:1.15}
+.lvl .ds{font-size:23.2px;color:var(--muted);line-height:1.3;margin-top:4px}
+.lvl.sel{background:rgba(242,183,117,.14);border-color:var(--gold)}
+.lvl[data-l="1"].sel{background:rgba(118,197,182,.16);border-color:var(--teal)}
+.lvl[data-l="2"].sel{background:rgba(242,183,117,.16);border-color:var(--gold)}
+.lvl[data-l="3"].sel{background:rgba(230,144,155,.16);border-color:var(--rose)}
+.lvl[data-l="4"].sel{background:rgba(168,146,224,.16);border-color:var(--violet)}
+
+/* ---------- casos ---------- */
+.caso{display:grid;grid-template-columns:1.55fr 1fr;gap:24px;align-items:start}
+.caso .texto{font-size:var(--t-dense);line-height:1.3}
+.caso .texto p + p{margin-top:.5em}
+.caso .texto .mt{margin-top:.5em}
+.dial{
+  border-left:4px solid var(--rose);padding:2px 0 2px 16px;margin:10px 0;
+  font-size:var(--t-dense);line-height:1.3;font-style:italic
+}
+.qbox{background:var(--card-2);border:1px solid var(--line);border-radius:20px;padding:25.6px}
+.qbox h4{font-size:var(--t-chip);letter-spacing:.16em;text-transform:uppercase;color:var(--gold);
+  font-weight:800;margin-bottom:14px}
+.qbox li{font-size:var(--t-dense);line-height:1.3;margin-bottom:.4em}
+.caso h3,.wrap > h3{margin-bottom:10px}
+
+/* ---------- fichas tipo flip (interacción) ---------- */
+.flip{
+  border:1px solid var(--line);border-radius:18px;background:var(--card);
+  padding:24px;cursor:pointer;min-height:100%;
+  transition:background .3s ease,border-color .3s ease,transform .25s ease;
+}
+.flip:hover{transform:translateY(-3px);border-color:var(--gold)}
+.flip .front .q{font-size:var(--t-dense);line-height:1.34}
+.flip .back{display:none}
+.flip.open{background:rgba(118,197,182,.12);border-color:var(--teal)}
+.flip.open .front{opacity:.42}
+.flip.open .front .hint{display:none}
+.flip.open .back{display:block;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.flip .hint{font-size:var(--t-chip);color:var(--muted);margin-top:12px;letter-spacing:.06em}
+
+/* ---------- hoja de trabajo ---------- */
+.field{display:flex;gap:14px;align-items:center;
+  border-bottom:2px dashed rgba(247,241,232,.26);padding:16px 2px}
+.field .lb{font-size:var(--t-dense);font-weight:700;white-space:nowrap}
+.field .ln{flex:1;border-bottom:0}
+
+/* ---------- contador de manos (interacción) ---------- */
+.tally{display:flex;gap:22.4px;justify-content:center}
+.tbtn{
+  border:1px solid var(--line);background:var(--card);border-radius:20px;
+  padding:24px 38.4px;cursor:pointer;text-align:center;
+  transition:background .25s ease,border-color .25s ease,transform .2s ease;
+}
+.tbtn:hover{transform:translateY(-3px);border-color:var(--gold)}
+.tbtn .lab{font-size:var(--t-chip);letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--muted)}
+.tbtn .val{font-size:67.2px;font-weight:800;line-height:1.05;color:var(--gold)}
+.tbtn.si .val{color:var(--teal)}
+.tbtn.no .val{color:var(--rose)}
+
+/* ---------- temporizador ---------- */
+#timer{
+  position:fixed;left:20px;bottom:20px;z-index:24;display:none;
+  background:rgba(23,18,43,.95);border:1px solid var(--line);border-radius:20px;
+  padding:18px 20px;min-width:300px;backdrop-filter:blur(8px);
+  box-shadow:0 18px 50px rgba(0,0,0,.45);
+}
+#timer.show{display:block}
+#tdisplay{font-size:70px;font-weight:800;text-align:center;
+  font-variant-numeric:tabular-nums;letter-spacing:.02em;line-height:1.05}
+#tdisplay.warn{color:var(--gold)}
+#tdisplay.done{color:var(--rose)}
+#timer .presets{display:flex;gap:7px;justify-content:center;margin:12px 0 10px;flex-wrap:wrap}
+#timer .tiny{font-size:16px;padding:7px 11px;border-radius:10px;border:1px solid var(--line);
+  background:var(--card);color:var(--ink);cursor:pointer;font-family:inherit;font-weight:700}
+#timer .tiny:hover{background:var(--card-2);border-color:var(--gold)}
+#timer .ctrl{display:flex;gap:8px;justify-content:center}
+#timer .lbl{text-align:center;font-size:16px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;margin-bottom:6px}
+
+/* ---------- overlays ---------- */
+.ov{
+  position:fixed;inset:0;z-index:40;background:rgba(14,10,26,.96);
+  display:none;overflow-y:auto;padding:60px;
+}
+.ov.show{display:block}
+.ov h3{color:var(--gold);margin-bottom:22px;font-size:36px}
+#menuList{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.mi{
+  display:flex;gap:14px;align-items:baseline;border:1px solid var(--line);border-radius:14px;
+  background:var(--card);padding:13px 17px;cursor:pointer;font-size:21px;line-height:1.3;
+  transition:background .2s ease,border-color .2s ease;
+}
+.mi:hover{background:var(--card-2);border-color:var(--gold)}
+.mi .n{color:var(--gold);font-weight:800;font-variant-numeric:tabular-nums;min-width:2.2em}
+.mi .s{color:var(--muted);font-size:16px;letter-spacing:.1em;text-transform:uppercase;margin-left:auto}
+#helpBody{font-size:23px;line-height:1.75;max-width:900px}
+#helpBody kbd{
+  display:inline-block;min-width:2.1em;text-align:center;padding:3px 9px;margin-right:10px;
+  border:1px solid var(--line);border-radius:8px;background:var(--card-2);font-family:inherit;
+  font-weight:800;color:var(--gold)
+}
+
+/* ---------- portada ---------- */
+.cover-title{font-size:108px;line-height:.98;font-weight:800;letter-spacing:-.025em}
+.cover-title .far{color:var(--rose);font-style:italic}
+.meta{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;
+  font-size:var(--t-chip);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.meta span{padding:8px 18px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+
+/* ---------- utilidades ---------- */
+.mt{margin-top:25.6px}
+.mt2{margin-top:38.4px}
+.mb{margin-bottom:25.6px}
+.tc{text-align:center}
+.big-stat{font-size:96px;font-weight:800;line-height:1;letter-spacing:-.03em}
+.divider{height:1px;background:var(--line);margin:32px 0}
+.breath{font-size:var(--t-chip);letter-spacing:.3em;text-transform:uppercase;color:var(--gold);
+  font-weight:800;opacity:.9}
+.pulse{transition:opacity .9s ease}
+.pulse.dim{opacity:.35}
+
+.slide::-webkit-scrollbar{width:9px}
+.slide::-webkit-scrollbar-thumb{background:rgba(242,183,117,.45);border-radius:9px}
+.slide::-webkit-scrollbar-track{background:transparent}
+
+/* El lienzo es fijo: no se requieren consultas de medios. */
+
+/* compactado para diapositivas con más contenido */
+.wrap.tight .card{padding:18px 22px}
+.wrap.tight .step-card{padding:13px 18px}
+.wrap.tight .grid{gap:13px}
+.wrap.tight .mt2{margin-top:18px}
+.wrap.tight .mt{margin-top:12px}
+.wrap.tight h2{margin-bottom:16px}
+.wrap.tight .divider{margin:14px 0}
+.wrap.tight .qbox{padding:20px 22px}
+.wrap.tight .qbox h4{margin-bottom:10px}
+.wrap.tight ul.clean li{margin-bottom:.26em}
+.wrap.tight .big-stat{font-size:72px}
+.wrap.tight .caso .texto{font-size:28px;line-height:1.2}
+.wrap.tight .caso .texto p + p,.wrap.tight .caso .texto .mt{margin-top:.2em}
+.wrap.tight > .eyebrow{margin-bottom:10px}
+.wrap.tight > h3{margin-bottom:8px}
+.wrap.tight .dial{margin:8px 0;line-height:1.26}
+</style>
+</head>
+<body>
+<div id="aura" style="opacity: 1;"></div>
+
+<div id="stage" style="transform: translate(-50%, -50%) scale(0.71);">
+  <div id="topbar">
+    <span class="brand">Cerca y a la vez lejos</span>
+    <span class="dot">•</span>
+    <span>Día 1</span>
+    <span class="spacer"></span>
+    <span id="chip-mom">Bienvenida</span>
+    <span id="counter">1 / 56</span>
+  </div>
+  <div id="deck"><section class="slide active" id="s0">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Taller para damas · Eje 3: Propósito Encendido</div>
+  <h1 class="cover-title" data-step="1">Cerca<br><span class="far">y a la vez lejos</span></h1>
+  <div class="mt2" data-step="2">
+    <svg viewBox="0 0 760 120" style="width:min(760px,86%);height:auto">
+      <line x1="40" y1="78" x2="300" y2="78" stroke="rgba(247,241,232,.28)" stroke-width="3"></line>
+      <line x1="460" y1="78" x2="720" y2="78" stroke="rgba(247,241,232,.28)" stroke-width="3"></line>
+      <path d="M300 78 Q380 10 460 78" fill="none" stroke="#F2B775" stroke-width="4" stroke-dasharray="9 11" stroke-linecap="round"></path>
+      <circle cx="300" cy="78" r="13" fill="#76C5B6"></circle>
+      <circle cx="460" cy="78" r="13" fill="#E6909B"></circle>
+    </svg>
+  </div>
+  <h3 class="mt2 gold" data-step="3" style="letter-spacing:.06em">DÍA 1 — ¿Estoy realmente cerca?</h3>
+  <div class="meta mt2" data-step="4">
+    <span>Jueves 15 de octubre</span>
+    <span>105 minutos</span>
+  </div>
+</div></section><section class="slide" id="s1">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">La frase que nos acompañará todo el día</div>
+  <h1 data-step="1" style="font-size:92px;line-height:1.05">
+    “No toda cercanía<br>significa <span class="gold">conexión</span>.”
+  </h1>
+  <div class="mt2" data-step="2" style="max-width:1200px;margin-left:auto;margin-right:auto">
+    <p class="lead muted">Una persona puede estar <span class="ink b">físicamente cerca</span>
+    y <span class="rose b">emocionalmente lejos</span>.</p>
+  </div>
+  <div class="card gold mt2" data-step="3" style="max-width:1150px;margin-left:auto;margin-right:auto">
+    <p class="lead"><span class="b">La pregunta que atraviesa todo el taller:</span><br>
+    “¿Estoy realmente cerca de las personas que Dios ha colocado cerca de mí?”</p>
+  </div>
+</div></section><section class="slide" id="s2">
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Momento 1 · Conectar</div>
+  <h2 data-step="1">¿De quién estás <span class="gold">realmente</span> cerca?</h2>
+  <div class="grid g2 mt">
+    <div class="card teal" data-step="2">
+      <span class="pill b" style="background:rgba(118,197,182,.2);color:var(--teal);border:1px solid rgba(118,197,182,.45)">Quién está cerca de mí</span>
+      <p class="mt" style="font-size:var(--t-sub);line-height:1.3">Mi esposo. Mis hijos. Mis padres. Mis hermanas. Mis amigas. Quienes sirven conmigo en la iglesia.</p>
+      <p class="muted mt" style="font-size:var(--t-dense)">Cercanía <span class="b">física</span>.</p>
+    </div>
+    <div class="card rose" data-step="3">
+      <span class="pill a">Quién está cerca de mi corazón</span>
+      <p class="mt" style="font-size:var(--t-sub);line-height:1.3">¿Con quién comparto verdaderamente mi vida… y no solamente un espacio?</p>
+      <p class="muted mt" style="font-size:var(--t-dense)">Cercanía <span class="b">del corazón</span>.</p>
+    </div>
+  </div>
+  <div class="mt2" data-step="4">
+    <p class="say">Hay una diferencia enorme entre <span class="u b">compartir un espacio</span> con alguien
+    y <span class="u b">compartir verdaderamente nuestra vida</span> con esa persona.”</p>
+  </div>
+</div></section><section class="slide" id="s3">
+<div class="wrap">
+  <h2 data-step="1">Podemos estar juntas… y estar desconectadas</h2>
+  <div class="grid g3 mt">
+    <div class="card" data-step="2">
+      <div style="font-size:51.2px;line-height:1;margin-bottom:12px">🏠</div>
+      <p>Vivir bajo el <span class="b">mismo techo</span> y casi no conversar.</p>
+    </div>
+    <div class="card" data-step="3">
+      <div style="font-size:51.2px;line-height:1;margin-bottom:12px">🍽️</div>
+      <p>Sentarnos juntas a la <span class="b">misma mesa</span> y estar completamente desconectadas.</p>
+    </div>
+    <div class="card" data-step="4">
+      <div style="font-size:51.2px;line-height:1;margin-bottom:12px">⛪</div>
+      <p>Asistir a la <span class="b">misma iglesia</span>, servir en el mismo ministerio… y no saber que
+      la persona de al lado atraviesa una <span class="rose b">lucha silenciosa</span>.</p>
+    </div>
+  </div>
+  <div class="card gold mt2" data-step="5">
+    <p class="lead">A veces las personas que físicamente están <span class="b">más cerca</span> de nosotras
+    son precisamente aquellas de quienes emocionalmente <span class="b rose">nos hemos alejado</span>.</p>
+  </div>
+</div></section><section class="slide" id="s4">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Dinámica</div>
+  <h1 data-step="1" style="font-size:94px">La distancia<br><span class="rose">invisible</span></h1>
+  <div class="card mt2" data-step="2" style="max-width:1050px;margin-left:auto;margin-right:auto">
+    <p class="lead">No tienes que hablar ni explicar nada.</p>
+    <p class="lead muted mt">Solamente piensa si cada afirmación <span class="ink b">describe alguna situación de tu vida</span>.</p>
+  </div>
+  <p class="breath mt2" data-step="3">Respira · Escucha · Piensa</p>
+</div></section><section class="slide" id="s5">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Afirmación 1 de 5</div>
+  <div class="card rose" data-step="1" style="max-width:1300px;margin:0 auto">
+    <p style="font-size:54px;line-height:1.25;font-style:italic">
+      “Hay una persona que está <span class="b">muy cerca de mí físicamente</span>,
+      pero con quien ya casi no converso de cosas importantes.”</p>
+  </div>
+  <p class="breath mt2" data-step="2">· · · Pausa · · ·</p>
+</div></section><section class="slide" id="s6">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Afirmación 2 de 5</div>
+  <div class="card rose" data-step="1" style="max-width:1300px;margin:0 auto">
+    <p style="font-size:54px;line-height:1.25;font-style:italic">
+      “Hay alguien <span class="b">a quien amo</span>, pero no sé realmente
+      qué está viviendo en este momento.”</p>
+  </div>
+  <p class="breath mt2" data-step="2">· · · Pausa · · ·</p>
+</div></section><section class="slide" id="s7">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Afirmación 3 de 5</div>
+  <div class="card rose" data-step="1" style="max-width:1300px;margin:0 auto">
+    <p style="font-size:54px;line-height:1.25;font-style:italic">
+      “Hay una persona que me habla, pero probablemente
+      <span class="b">no se siente verdaderamente escuchada</span> por mí.”</p>
+  </div>
+  <p class="breath mt2" data-step="2">· · · Pausa · · ·</p>
+</div></section><section class="slide" id="s8">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Afirmación 4 de 5</div>
+  <div class="card rose" data-step="1" style="max-width:1300px;margin:0 auto">
+    <p style="font-size:54px;line-height:1.25;font-style:italic">
+      “Hay alguien de quien sé que necesita acompañamiento, pero siempre estoy
+      <span class="b">esperando encontrar el momento adecuado</span> para acercarme.”</p>
+  </div>
+  <p class="breath mt2" data-step="2">· · · Pausa · · ·</p>
+</div></section><section class="slide" id="s9">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Afirmación 5 de 5</div>
+  <div class="card rose" data-step="1" style="max-width:1300px;margin:0 auto">
+    <p style="font-size:54px;line-height:1.25;font-style:italic">
+      “Hay una relación que antes era cercana y que
+      <span class="b">poco a poco se ha ido enfriando</span>.”</p>
+  </div>
+  <p class="breath mt2" data-step="2">· · · Pausa · · ·</p>
+</div></section><section class="slide" id="s10">
+<div class="wrap tc">
+  <div class="card teal" data-step="1" style="max-width:1350px;margin:0 auto">
+    <p class="say" style="font-size:44px;line-height:1.3">
+      Si alguna de estas afirmaciones tocó alguna parte de nuestra realidad,
+      <span class="b">no estamos aquí para sentir culpa</span>. Estamos aquí para aprender.”</p>
+  </div>
+  <h2 class="mt2" data-step="2" style="max-width:1250px;margin-left:auto;margin-right:auto">
+    Reconocer una distancia no significa que todo esté perdido.
+  </h2>
+  <p class="lead gold b" data-step="3">Muchas veces reconocerla es el primer paso para comenzar a construir un puente.</p>
+</div></section><section class="slide" id="s11">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Conversemos · Levanta la mano</div>
+  <h2 data-step="1" style="max-width:1400px;margin-left:auto;margin-right:auto">
+    ¿Puede alguien estar <span class="teal">físicamente cerca</span> de nosotras
+    y al mismo tiempo <span class="rose">sentirse lejos</span> de nosotras?
+  </h2>
+  <div class="tally mt2" data-step="2">
+    <div class="tbtn si" onclick="tally(this)"><div class="val">0</div><div class="lab">Sí</div></div>
+    <div class="tbtn no" onclick="tally(this)"><div class="val">0</div><div class="lab">No</div></div>
+  </div>
+  <p class="muted mt" style="font-size:var(--t-chip)" data-step="2">Toca cada cuadro para ir contando las manos</p>
+  <div class="card gold mt2" data-step="3" style="max-width:1000px;margin-left:auto;margin-right:auto">
+    <p class="lead b">Sí. Y justamente de eso vamos a conversar hoy.</p>
+  </div>
+</div></section><section class="slide" id="s12">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Momento 2 · Enseñar</div>
+  <h1 data-step="1" style="font-size:84px;line-height:1.06">
+    Estar cerca<br>no siempre significa<br><span class="gold">estar presente</span></h1>
+  <div class="grid g3 mt2" style="max-width:1400px;margin-left:auto;margin-right:auto">
+    <div class="card" data-step="2"><div class="num" style="margin:0 auto 14px">1</div>
+      <p class="b">Cercanía física no es lo mismo que conexión</p></div>
+    <div class="card" data-step="3"><div class="num" style="margin:0 auto 14px">2</div>
+      <p class="b">La presencia significativa requiere intencionalidad</p></div>
+    <div class="card" data-step="4"><div class="num" style="margin:0 auto 14px">3</div>
+      <p class="b">Una relación cercana necesita presencia, escucha y acompañamiento</p></div>
+  </div>
+</div></section><section class="slide" id="s13">
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Idea central 1</div>
+  <h1 data-step="1" style="font-size:76px;line-height:1.06">
+    Cercanía física<br>no es lo mismo<br>que <span class="gold">conexión</span></h1>
+  <div class="card mt2" data-step="2" style="max-width:1300px">
+    <p class="lead">Vivimos rodeadas de personas: familia, hermanos en la iglesia, amigas, compañeras de ministerio, vecinas.</p>
+    <p class="lead gold b mt">Pero la <span class="u">cantidad</span> de contacto no determina la <span class="u">calidad</span> de una relación.</p>
+  </div>
+</div></section><section class="slide" id="s14">
+<div class="wrap">
+  <h2 data-step="1">La ilusión de la cercanía</h2>
+  <div class="grid g2 mt">
+    <div class="card" data-step="2"><p>Podemos <span class="b">hablar mucho</span><br>y comunicarnos poco.</p></div>
+    <div class="card" data-step="3"><p>Podemos <span class="b">estar juntas</span><br>y sentirnos solas.</p></div>
+    <div class="card" data-step="4"><p>Podemos preguntar <span class="b">“¿cómo estás?”</span><br>y no estar preparadas para escuchar la respuesta.</p></div>
+    <div class="card" data-step="5"><p>Podemos decir <span class="b">“cuenta conmigo”</span><br>y nunca tener tiempo para acompañar.</p></div>
+  </div>
+  <p class="lead tc mt2 gold b" data-step="6">Por eso debemos diferenciar entre contacto y conexión.</p>
+</div></section><section class="slide" id="s15">
+<div class="wrap">
+  <h2 class="tc" data-step="1">Contacto <span class="muted">o</span> conexión</h2>
+  <div class="vs mt">
+    <div class="card rose" data-step="2">
+      <span class="pill a">Contacto</span>
+      <p class="mt" style="font-size:var(--t-sub);line-height:1.3">“¿Estoy <span class="b">físicamente</span> con esta persona?”</p>
+      <div class="divider"></div>
+      <p class="muted">El contacto produce <span class="ink b">convivencia</span>.</p>
+    </div>
+    <div class="mid" data-step="2">VS</div>
+    <div class="card teal" data-step="3">
+      <span class="pill b">Conexión</span>
+      <p class="mt" style="font-size:var(--t-sub);line-height:1.3">“¿Estoy <span class="b">verdaderamente disponible</span> para esta persona?”</p>
+      <div class="divider"></div>
+      <p class="muted">La conexión produce <span class="ink b">conocimiento, confianza, comprensión y acompañamiento</span>.</p>
+    </div>
+  </div>
+</div></section><section class="slide" id="s16">
+<div class="wrap tight">
+  <div class="eyebrow" data-step="1">Un ejemplo de todos los días</div>
+  <div class="g-21 grid">
+    <div data-step="1">
+      <p class="say" style="font-size:38px;line-height:1.34">
+        Imaginemos una madre que pasa todo el día con sus hijos. Prepara la comida, limpia, organiza la casa,
+        pregunta si hicieron sus tareas, los lleva a sus actividades y está físicamente presente.
+        Sin embargo, cuando su hija intenta contarle algo importante, ella está mirando el celular,
+        respondiendo mensajes o pensando en todo lo que todavía tiene que hacer.”</p>
+    </div>
+    <div class="card gold" data-step="2">
+      <p style="font-size:var(--t-sub);line-height:1.3">Esa madre <span class="b">está presente</span> físicamente.</p>
+      <div class="divider"></div>
+      <p style="font-size:var(--t-sub);line-height:1.3" class="gold b">Pero ¿su hija experimenta esa presencia como una verdadera conexión?</p>
+    </div>
+  </div>
+  <div class="card mt2" data-step="3">
+    <p class="muted">La intención no es condenar a nadie. Es ver que
+    <span class="ink b">la presencia puede existir físicamente sin convertirse automáticamente
+    en una experiencia de conexión para la otra persona</span>.</p>
+  </div>
+</div></section><section class="slide" id="s17">
+<div class="wrap">
+  <h2 data-step="1">Cuatro maneras de estar <span class="muted">— y lo que cada una dice</span></h2>
+  <div class="grid mt" style="gap:14px">
+    <div class="step-card" data-step="2">
+      <div class="num">1</div><div>
+        <div class="tag">Cercanía física</div>
+        <div class="ph">“Estoy contigo.”</div></div>
+    </div>
+    <div class="step-card" data-step="3" style="margin-left:32px">
+      <div class="num">2</div><div>
+        <div class="tag">Presencia intencional</div>
+        <div class="ph">“Estoy disponible para ti.”</div></div>
+    </div>
+    <div class="step-card" data-step="4" style="margin-left:64px">
+      <div class="num">3</div><div>
+        <div class="tag">Conexión</div>
+        <div class="ph">“Quiero comprenderte.”</div></div>
+    </div>
+    <div class="step-card" data-step="5" style="margin-left:96px;border-color:rgba(242,183,117,.5);background:rgba(242,183,117,.1)">
+      <div class="num">4</div><div>
+        <div class="tag">Acompañamiento</div>
+        <div class="ph">“No solamente quiero saber lo que estás viviendo; quiero caminar contigo cuando corresponda.”</div></div>
+    </div>
+  </div>
+</div></section><section class="slide" id="s18">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Idea central 2</div>
+  <h1 data-step="1" style="font-size:80px;line-height:1.06">
+    La presencia significativa<br>requiere <span class="gold">intencionalidad</span></h1>
+  <p class="lead muted mt2" data-step="2">Nada de lo que más importa en una relación aparece solo.</p>
+</div></section><section class="slide" id="s19">
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Fundamento bíblico</div>
+  <div class="verse" data-step="1">
+    “Y estas palabras que yo te mando hoy, estarán sobre tu corazón; y las repetirás a tus hijos,
+    y hablarás de ellas estando en tu casa, y andando por el camino, y al acostarte, y cuando te levantes.”
+    <span class="ref">Deuteronomio 6:6-7</span>
+  </div>
+  <div class="grid g4 mt2">
+    <div class="card teal tc" data-step="2"><div style="font-size:44.8px;margin-bottom:8px">🏡</div><p class="b">Estando en casa</p></div>
+    <div class="card teal tc" data-step="3"><div style="font-size:44.8px;margin-bottom:8px">🚶‍♀️</div><p class="b">Andando por el camino</p></div>
+    <div class="card teal tc" data-step="4"><div style="font-size:44.8px;margin-bottom:8px">🌙</div><p class="b">Al acostarte</p></div>
+    <div class="card teal tc" data-step="5"><div style="font-size:44.8px;margin-bottom:8px">🌅</div><p class="b">Cuando te levantes</p></div>
+  </div>
+  <p class="lead tc mt2 gold b" data-step="6">La formación espiritual ocurre <span class="u">dentro de la vida</span>.</p>
+</div></section><section class="slide" id="s20">
+<div class="wrap tc">
+  <h1 data-step="1" style="font-size:70px;line-height:1.1;max-width:1450px;margin:0 auto">
+    Las relaciones significativas no se construyen solamente mediante <span class="rose">grandes momentos</span>;
+    se construyen mediante <span class="gold">pequeños momentos intencionales</span> repetidos a lo largo del tiempo.
+  </h1>
+  <div class="card mt2" data-step="2" style="max-width:1200px;margin-left:auto;margin-right:auto">
+    <p class="lead">La fe, el afecto, la confianza, la comunicación y el acompañamiento
+    <span class="b rose">no aparecen espontáneamente</span>.</p>
+    <p class="lead gold b mt">Se cultivan.</p>
+  </div>
+</div></section><section class="slide" id="s21">
+<div class="wrap">
+  <h2 data-step="1">La intencionalidad <span class="gold">cambia la pregunta</span></h2>
+  <p class="muted mb" data-step="1" style="font-size:var(--t-chip)">Toca cada tarjeta para descubrir el cambio</p>
+  <div class="grid g3">
+    <div class="flip" data-step="2" onclick="flip(this)">
+      <div class="front">
+        <span class="pill a">Poco intencional</span>
+        <p class="q mt">“¿Por qué mi familia no me cuenta sus cosas?”</p>
+        <p class="hint">toca para ver →</p>
+      </div>
+      <div class="back">
+        <span class="pill b">Intencional</span>
+        <p class="q mt b">“¿He creado un ambiente donde mi familia pueda hablar conmigo?”</p>
+      </div>
+    </div>
+    <div class="flip" data-step="3" onclick="flip(this)">
+      <div class="front">
+        <span class="pill a">Poco intencional</span>
+        <p class="q mt">“Mis hijos saben que los amo.”</p>
+        <p class="hint">toca para ver →</p>
+      </div>
+      <div class="back">
+        <span class="pill b">Intencional</span>
+        <p class="q mt b">“¿Mis hijos están experimentando mi amor?”</p>
+      </div>
+    </div>
+    <div class="flip" data-step="4" onclick="flip(this)">
+      <div class="front">
+        <span class="pill a">Poco intencional</span>
+        <p class="q mt">“Ella sabe que puede contar conmigo.”</p>
+        <p class="hint">toca para ver →</p>
+      </div>
+      <div class="back">
+        <span class="pill b">Intencional</span>
+        <p class="q mt b">“Voy a buscarla, escucharla y acompañarla.”</p>
+      </div>
+    </div>
+  </div>
+</div></section><section class="slide" id="s22">
+<div class="wrap">
+  <h2 data-step="1">Estar presente <span class="rose">no</span> significa resolver</h2>
+  <div class="grid g2 mt">
+    <div class="card rose" data-step="2">
+      <span class="pill a">Estar presente no significa</span>
+      <ul class="clean cross mt" style="font-size:var(--t-dense)">
+        <li>Tener respuesta para todo.</li>
+        <li>Solucionar todos los problemas.</li>
+        <li>Asumir responsabilidades que pertenecen a otra persona.</li>
+        <li>Convertirnos en terapeuta, consejera o salvadora de todos.</li>
+      </ul>
+    </div>
+    <div class="card teal" data-step="3">
+      <span class="pill b">A veces acompañar significa</span>
+      <ul class="clean check mt" style="font-size:var(--t-dense)">
+        <li>“Estoy aquí. Te escucho. No tienes que atravesar esto sola.”</li>
+        <li>“Voy a orar contigo.”</li>
+        <li>“Esto requiere una ayuda que yo no puedo darte sola. Podemos buscar apoyo pastoral o profesional.”</li>
+      </ul>
+    </div>
+  </div>
+</div></section><section class="slide" id="s23">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Idea central 3</div>
+  <h1 data-step="1" style="font-size:74px;line-height:1.08;max-width:1400px;margin:0 auto">
+    Una relación cercana necesita<br>
+    <span class="gold">presencia</span>, <span class="teal">escucha</span> y <span class="violet">acompañamiento</span>
+  </h1>
+  <p class="lead muted mt2" data-step="2">Cuatro dimensiones de una presencia significativa</p>
+</div></section><section class="slide" id="s24">
+<div class="wrap">
+  <div class="row c mb" data-step="1">
+    <div class="num">1</div>
+    <h2 style="margin:0">VER <span class="muted" style="font-size:var(--t-sub)">— desarrollar sensibilidad</span></h2>
+  </div>
+  <p class="lead" data-step="1">No solamente mirar su rostro, sino <span class="b gold">observar cambios</span>.</p>
+  <div class="grid g3 mt2">
+    <div class="card" data-step="2"><p>¿Está diferente?</p></div>
+    <div class="card" data-step="2"><p>¿Está más callada?</p></div>
+    <div class="card" data-step="3"><p>¿Está evitando conversar?</p></div>
+    <div class="card" data-step="3"><p>¿Está cansada?</p></div>
+    <div class="card" data-step="4"><p>¿Ha dejado de participar?</p></div>
+    <div class="card" data-step="4"><p>¿Hay algo que parece estar afectándola?</p></div>
+  </div>
+</div></section><section class="slide" id="s25">
+<div class="wrap tight">
+  <div class="row c mb" data-step="1">
+    <div class="num">2</div>
+    <h2 style="margin:0">ESCUCHAR <span class="muted" style="font-size:var(--t-sub)">— comprender antes de reaccionar</span></h2>
+  </div>
+  <div class="card rose" data-step="1">
+    <p class="lead">Escuchar <span class="b">no</span> significa esperar que la otra persona termine para poder responder.</p>
+  </div>
+  <div class="grid g2 mt2">
+    <div class="card" data-step="2">
+      <p>Una persona puede hablar <span class="b">diez minutos</span>…<br>y no sentirse escuchada.</p>
+    </div>
+    <div class="card teal" data-step="3">
+      <p>Otra puede decir solamente: <span class="b">“Estoy cansada.”</span><br>
+      y encontrar a alguien que se detiene y pregunta:</p>
+      <p class="lead gold b mt">“¿Quieres contarme qué está pasando?”</p>
+    </div>
+  </div>
+  <p class="lead tc mt2 gold b" data-step="4">Esa segunda pregunta puede abrir una puerta que llevaba mucho tiempo cerrada.</p>
+</div></section><section class="slide" id="s26">
+<div class="wrap">
+  <div class="row c mb" data-step="1">
+    <div class="num">3</div>
+    <h2 style="margin:0">COMPRENDER <span class="muted" style="font-size:var(--t-sub)">— no es estar de acuerdo</span></h2>
+  </div>
+  <div class="grid mt" style="gap:16px">
+    <div class="card" data-step="2"><p>Podemos <span class="b teal">comprender el dolor</span> de una persona
+      sin <span class="b rose">aprobar todas sus decisiones</span>.</p></div>
+    <div class="card" data-step="3"><p>Podemos <span class="b teal">reconocer una emoción</span>
+      sin <span class="b rose">justificar una conducta</span>.</p></div>
+  </div>
+  <div class="vs mt2">
+    <div class="card teal" data-step="4"><p class="lead">“Entiendo que esto te haya dolido.”</p></div>
+    <div class="mid" data-step="4">no es</div>
+    <div class="card rose" data-step="4"><p class="lead">“Todo lo que hiciste estuvo bien.”</p></div>
+  </div>
+</div></section><section class="slide" id="s27">
+<div class="wrap">
+  <div class="row c mb" data-step="1">
+    <div class="num">4</div>
+    <h2 style="margin:0">ACOMPAÑAR <span class="muted" style="font-size:var(--t-sub)">— presencia responsable</span></h2>
+  </div>
+  <div class="grid g3" data-step="2" style="gap:12px">
+    <div class="card"><p class="tc">Llamar</p></div>
+    <div class="card"><p class="tc">Visitar</p></div>
+    <div class="card"><p class="tc">Conversar</p></div>
+  </div>
+  <div class="grid g3 mt" data-step="3" style="gap:12px">
+    <div class="card"><p class="tc">Orar</p></div>
+    <div class="card"><p class="tc">Enviar un mensaje</p></div>
+    <div class="card"><p class="tc">Ofrecer ayuda</p></div>
+  </div>
+  <div class="grid g3 mt" data-step="4" style="gap:12px">
+    <div class="card"><p class="tc">Recordar una fecha</p></div>
+    <div class="card"><p class="tc">Preguntar nuevamente cómo sigue</p></div>
+    <div class="card"><p class="tc">Caminar junto a alguien durante un proceso</p></div>
+  </div>
+  <div class="card gold mt2" data-step="5">
+    <p class="lead">La diferencia fundamental es que el acompañamiento incluye <span class="b u">continuidad</span>.</p>
+  </div>
+</div></section><section class="slide" id="s28">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">La diferencia está en la segunda pregunta</div>
+  <div class="card" data-step="1" style="max-width:1200px;margin:0 auto">
+    <p class="lead muted">No es solamente:</p>
+    <p style="font-size:46px;font-weight:700" class="mt">“¿Cómo estás?”</p>
+  </div>
+  <p class="breath mt2" data-step="2">sino también</p>
+  <div class="card gold mt2" data-step="2" style="max-width:1200px;margin:0 auto">
+    <p style="font-size:44px;font-weight:700;line-height:1.3">
+      “La semana pasada me contaste que estabas pasando por algo. <span class="gold">¿Cómo sigues?</span>”</p>
+  </div>
+  <div class="grid g3 mt2" data-step="3" style="max-width:1100px;margin-left:auto;margin-right:auto">
+    <div class="card teal"><p class="b tc">“Te escuché.”</p></div>
+    <div class="card teal"><p class="b tc">“Me importó.”</p></div>
+    <div class="card teal"><p class="b tc">“Te recuerdo.”</p></div>
+  </div>
+</div></section><section class="slide" id="s29">
+<div class="wrap">
+  <h2 class="tc" data-step="1">Un modelo para recordar</h2>
+  <div class="flow mt2">
+    <div class="node" data-step="2" style="border-color:rgba(118,197,182,.5);background:rgba(118,197,182,.1)">
+      <div class="ic">👁️</div><div class="nm teal">VER</div></div>
+    <div class="arr" data-step="3">→</div>
+    <div class="node" data-step="3" style="border-color:rgba(242,183,117,.5);background:rgba(242,183,117,.1)">
+      <div class="ic">👂</div><div class="nm gold">ESCUCHAR</div></div>
+    <div class="arr" data-step="4">→</div>
+    <div class="node" data-step="4" style="border-color:rgba(168,146,224,.5);background:rgba(168,146,224,.1)">
+      <div class="ic">💭</div><div class="nm violet">COMPRENDER</div></div>
+    <div class="arr" data-step="5">→</div>
+    <div class="node" data-step="5" style="border-color:rgba(230,144,155,.5);background:rgba(230,144,155,.1)">
+      <div class="ic">🤝</div><div class="nm rose">ACOMPAÑAR</div></div>
+  </div>
+  <div class="card mt2" data-step="6">
+    <p class="say" style="font-size:36px;line-height:1.34">
+      Quizá muchas veces queremos comenzar directamente aconsejando. Pero
+      <span class="b">antes de aconsejar necesitamos aprender a ver</span>.
+      Antes de responder necesitamos escuchar. Antes de corregir necesitamos comprender.
+      Y antes de pensar que ya hicimos suficiente necesitamos preguntarnos si debemos acompañar.”</p>
+  </div>
+</div></section><section class="slide" id="s30">
+<div class="wrap tight">
+  <h2 data-step="1">La vida espiritual no ocurre únicamente en espacios formales</h2>
+  <div class="grid g2 mt">
+    <div class="card" data-step="2">
+      <span class="pill c">Es importante</span>
+      <ul class="clean mt tight" style="font-size:var(--t-dense)">
+        <li>La iglesia</li><li>El ministerio</li><li>Los cultos</li><li>Las reuniones</li>
+      </ul>
+    </div>
+    <div class="card teal" data-step="3">
+      <span class="pill b">Pero la fe también se expresa en</span>
+      <ul class="clean check mt tight" style="font-size:var(--t-dense);line-height:1.22">
+        <li>La conversación cotidiana</li><li>La mesa</li><li>El camino</li>
+        <li>Los momentos difíciles</li><li>Las decisiones</li><li>Los conflictos</li>
+        <li>Los pequeños hábitos familiares</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card gold mt" data-step="4">
+    <p class="lead">La mujer cristiana no está llamada únicamente a desarrollar actividades espirituales,
+    sino a <span class="b">encarnar una presencia que comunique el amor de Dios</span> en sus relaciones cotidianas.</p>
+  </div>
+</div></section><section class="slide" id="s31">
+<div class="wrap tc">
+  <h1 data-step="1" style="font-size:66px;line-height:1.12;max-width:1400px;margin:0 auto">
+    El propósito no se expresa solamente en <span class="muted">grandes proyectos ministeriales</span>.
+  </h1>
+  <h1 data-step="2" class="mt2" style="font-size:66px;line-height:1.12;max-width:1400px;margin-left:auto;margin-right:auto">
+    También se expresa en <span class="gold">la manera en que una mujer acompaña a las personas
+    que Dios ha colocado alrededor de ella</span>.
+  </h1>
+</div></section><section class="slide" id="s32">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Reflexión personal · en silencio</div>
+  <h1 data-step="1" style="font-size:62px;line-height:1.14;max-width:1450px;margin:0 auto">
+    Si las personas que viven conmigo tuvieran que describir mi presencia en sus vidas,
+    ¿dirían que <span class="gold">me siento cerca</span> o que <span class="rose">simplemente estoy cerca</span>?
+  </h1>
+  <p class="muted lead mt2" data-step="2">Nadie tiene que responder en voz alta.</p>
+  <button class="btn mt2" data-step="2" onclick="setT(60);startT();showTimer()" style="font-size:var(--t-chip);padding:14px 26px">⏱ Un minuto de silencio</button>
+</div></section><section class="slide" id="s33">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Momento 3 · Dialogar</div>
+  <h1 data-step="1" style="font-size:96px">Casos <span class="gold">espejo</span></h1>
+  <div class="grid g3 mt2" style="max-width:1400px;margin-left:auto;margin-right:auto">
+    <div class="card" data-step="2"><div class="num" style="margin:0 auto 12px">👥</div>
+      <p class="b">Grupos de 4 a 6 participantes</p></div>
+    <div class="card" data-step="3"><div class="num" style="margin:0 auto 12px">📄</div>
+      <p class="b">Cada grupo recibe un caso</p></div>
+    <div class="card" data-step="4"><div class="num" style="margin:0 auto 12px">⏱</div>
+      <p class="b">7 minutos para analizarlo</p></div>
+  </div>
+  <div class="card teal mt2" data-step="5" style="max-width:1150px;margin-left:auto;margin-right:auto">
+    <p class="lead">Son casos <span class="b">ficticios</span>. No vamos a contar situaciones personales:
+    vamos a aprender juntas de lo que vemos en el caso.</p>
+  </div>
+</div></section><section class="slide" id="s34">
+<div class="wrap tight">
+  <div class="eyebrow" data-step="1">Caso 1</div>
+  <h3 data-step="1" class="gold">“Mamá está, pero no está”</h3>
+  <div class="caso mt">
+    <div class="texto" data-step="1">
+      <p>María tiene dos hijos adolescentes. Es una mujer responsable, trabajadora y comprometida con la iglesia.
+      Procura que sus hijos tengan todo lo necesario. Está pendiente de sus estudios, alimentación, horarios y actividades.
+      Sin embargo, desde hace algunos meses su hija mayor ha comenzado a mostrarse distante.</p>
+      <div class="dial">
+        — María: “¿Qué te pasa?”<br>
+        — Su hija: “Nada.”<br>
+        — María piensa: “Los adolescentes son así.”
+      </div>
+      <p>Continúa con sus responsabilidades y no insiste.</p>
+      <p>Una tarde, una amiga de su hija le comenta que la joven está atravesando una situación difícil,
+      pero que <span class="b">no quiere hablar con su madre</span> porque siente que cuando intenta conversar con ella,
+      María inmediatamente comienza a darle consejos, corregirla o contarle cómo debería actuar.</p>
+    </div>
+    <div class="qbox" data-step="2">
+      <h4>Preguntas para el grupo</h4>
+      <ul class="clean">
+        <li>¿Cuál es el problema principal?</li>
+        <li>¿María está físicamente presente?</li>
+        <li>¿Está emocionalmente disponible?</li>
+        <li>¿Qué podría estar necesitando la hija?</li>
+        <li>¿Qué debería cambiar María?</li>
+        <li>¿Qué sería más importante inicialmente: <span class="b">aconsejar</span> o <span class="b">escuchar</span>?</li>
+      </ul>
+    </div>
+  </div>
+</div></section><section class="slide" id="s35">
+<div class="wrap tight">
+  <div class="eyebrow" data-step="1">Caso 2</div>
+  <h3 data-step="1" class="gold">“Nos vemos todos los domingos”</h3>
+  <div class="caso mt">
+    <div class="texto" data-step="1">
+      <p>Rosa y Elena sirven juntas en la iglesia desde hace varios años. Se saludan, conversan después del culto
+      y participan en algunas actividades. Rosa sabe que Elena está casada, tiene hijos y trabaja.</p>
+      <p class="mt">Sin embargo, no sabe que desde hace varios meses Elena está experimentando
+      <span class="b">agotamiento emocional y dificultades dentro de su hogar</span>.
+      Un domingo, Elena llega especialmente callada.</p>
+      <div class="dial">
+        — Rosa: “¿Todo bien?”<br>
+        — Elena: “Sí, todo bien.”<br>
+        — Rosa sonríe: “Qué bueno. Nos vemos la próxima semana.”
+      </div>
+    </div>
+    <div class="qbox" data-step="2">
+      <h4>Preguntas para el grupo</h4>
+      <ul class="clean">
+        <li>¿Hubo contacto?</li>
+        <li>¿Hubo verdadera comunicación?</li>
+        <li>¿Qué otra pregunta podría haber hecho Rosa?</li>
+        <li>¿Cómo podría haber mostrado interés <span class="b">sin invadir</span>?</li>
+        <li>¿Qué diferencia existe entre preguntar por cortesía y preguntar porque realmente queremos saber?</li>
+      </ul>
+    </div>
+  </div>
+</div></section><section class="slide" id="s36">
+<div class="wrap tight">
+  <div class="eyebrow" data-step="1">Caso 3</div>
+  <h3 data-step="1" class="gold">“Ya no somos como antes”</h3>
+  <div class="caso mt">
+    <div class="texto" data-step="1">
+      <p>Patricia y su hermana fueron muy cercanas durante muchos años. Compartían decisiones, dificultades,
+      celebraciones y momentos importantes. Con el paso del tiempo comenzaron a surgir pequeños desacuerdos.</p>
+      <p class="mt"><span class="b">Nunca tuvieron una gran discusión</span>, pero dejaron de llamarse con frecuencia.
+      Después dejaron de visitarse. Finalmente, comenzaron a hablar solamente en reuniones familiares.</p>
+      <p class="mt">Ambas sienten que la otra debería dar el primer paso.</p>
+      <div class="dial">
+        Las dos dicen: “Yo no estoy molesta.”<br>
+        Pero ninguna busca realmente acercarse.
+      </div>
+    </div>
+    <div class="qbox" data-step="2">
+      <h4>Preguntas para el grupo</h4>
+      <ul class="clean">
+        <li>¿Existe un conflicto abierto?</li>
+        <li>¿Existe distancia?</li>
+        <li>¿Cómo puede crecer una distancia cuando nadie decide enfrentarla?</li>
+        <li>¿Qué podría impedir que una de ellas dé el primer paso?</li>
+        <li>¿Qué sería un acercamiento saludable?</li>
+      </ul>
+    </div>
+  </div>
+</div></section><section class="slide" id="s37">
+<div class="wrap tight">
+  <div class="eyebrow" data-step="1">Compartimos en plenaria</div>
+  <h2 data-step="1">Tres preguntas para cada grupo</h2>
+  <div class="grid mt" style="gap:16px">
+    <div class="step-card" data-step="2"><div class="num">1</div>
+      <div class="ph">¿Qué observaron?</div></div>
+    <div class="step-card" data-step="3"><div class="num">2</div>
+      <div class="ph">¿Qué principio del taller aparece en este caso?</div></div>
+    <div class="step-card" data-step="4" style="border-color:rgba(242,183,117,.5);background:rgba(242,183,117,.1)">
+      <div class="num">3</div>
+      <div class="ph">Si ustedes fueran esa persona, ¿qué harían diferente?</div></div>
+  </div>
+  <div class="card mt2 tc" data-step="5">
+    <p class="muted">Recordemos: no buscamos culpables. Buscamos aprender.</p>
+    <p class="lead gold b mt">“¿Qué puedo hacer yo para convertirme en una presencia más significativa?”</p>
+  </div>
+</div></section><section class="slide" id="s38">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Momento 4 · Practicar</div>
+  <h1 data-step="1" style="font-size:92px">Mi mapa de<br><span class="gold">relaciones</span></h1>
+  <div class="card mt2" data-step="2" style="max-width:1250px;margin-left:auto;margin-right:auto">
+    <p class="lead">En el centro de tu hoja escribe: <span class="gold b">YO</span></p>
+    <p class="lead muted mt">Alrededor encontrarás cuatro niveles.</p>
+  </div>
+  <p class="breath mt2" data-step="3">Toma tu hoja y tu lapicero</p>
+</div></section><section class="slide" id="s39">
+<div class="wrap tight">
+  <h2 data-step="1" style="margin-bottom:12px">Los cuatro niveles <span class="muted" style="font-size:var(--t-chip)">— toca un nivel o un círculo</span></h2>
+  <div id="mapaWrap" data-step="1">
+    <svg id="mapa" viewBox="0 0 600 600" onclick="">
+      <circle class="ring" data-l="4" cx="300" cy="300" r="282" fill="rgba(168,146,224,.10)" stroke="rgba(168,146,224,.55)" stroke-width="2" onclick="pickLvl(4)"></circle>
+      <circle class="ring" data-l="3" cx="300" cy="300" r="213" fill="rgba(230,144,155,.12)" stroke="rgba(230,144,155,.55)" stroke-width="2" onclick="pickLvl(3)"></circle>
+      <circle class="ring" data-l="2" cx="300" cy="300" r="146" fill="rgba(242,183,117,.14)" stroke="rgba(242,183,117,.6)" stroke-width="2" onclick="pickLvl(2)"></circle>
+      <circle class="ring" data-l="1" cx="300" cy="300" r="82" fill="rgba(118,197,182,.2)" stroke="rgba(118,197,182,.7)" stroke-width="2" onclick="pickLvl(1)"></circle>
+      <circle cx="300" cy="300" r="34" fill="#F2B775"></circle>
+      <text x="300" y="309" text-anchor="middle" font-size="24" font-weight="800" fill="#17122b" font-family="Segoe UI,Arial,sans-serif">YO</text>
+      <text x="300" y="232" text-anchor="middle" font-size="19" font-weight="800" fill="#76C5B6" font-family="Segoe UI,Arial,sans-serif">1</text>
+      <text x="300" y="168" text-anchor="middle" font-size="19" font-weight="800" fill="#F2B775" font-family="Segoe UI,Arial,sans-serif">2</text>
+      <text x="300" y="102" text-anchor="middle" font-size="19" font-weight="800" fill="#E6909B" font-family="Segoe UI,Arial,sans-serif">3</text>
+      <text x="300" y="36" text-anchor="middle" font-size="19" font-weight="800" fill="#A892E0" font-family="Segoe UI,Arial,sans-serif">4</text>
+    </svg>
+    <div class="grid" style="gap:12px">
+      <div class="lvl" data-l="1" onclick="pickLvl(1)">
+        <div class="no teal">1</div>
+        <div><div class="nmm teal">MUY CERCA</div>
+        <div class="ds">Personas con quienes existe una relación significativa, confianza y comunicación.</div></div>
+      </div>
+      <div class="lvl" data-l="2" onclick="pickLvl(2)">
+        <div class="no gold">2</div>
+        <div><div class="nmm gold">CERCA, PERO NECESITO CUIDAR</div>
+        <div class="ds">Personas importantes con quienes existe una buena relación, pero que requieren mayor atención.</div></div>
+      </div>
+      <div class="lvl" data-l="3" onclick="pickLvl(3)">
+        <div class="no rose">3</div>
+        <div><div class="nmm rose">NOS HEMOS DISTANCIADO</div>
+        <div class="ds">Personas con quienes antes existía mayor conexión, pero que hoy se encuentran emocional o comunicacionalmente más lejos.</div></div>
+      </div>
+      <div class="lvl" data-l="4" onclick="pickLvl(4)">
+        <div class="no violet">4</div>
+        <div><div class="nmm violet">NECESITO ACERCARME</div>
+        <div class="ds">Personas que Dios ha colocado cerca de nuestra vida, pero con quienes necesitamos comenzar o recuperar una relación más significativa.</div></div>
+      </div>
+    </div>
+  </div>
+</div></section><section class="slide" id="s40">
+<div class="wrap tight">
+  <h2 data-step="1">Cómo llenar mi mapa</h2>
+  <div class="grid g2 mt">
+    <div class="card teal" data-step="2">
+      <ul class="clean check" style="font-size:var(--t-dense)">
+        <li>No pensemos en todas las personas que conocemos: pensemos en las que <span class="b">realmente tienen significado</span> en nuestra vida.</li>
+        <li>No necesitamos escribir nombres completos. Podemos usar <span class="b">iniciales</span> o una palabra que nos permita identificar a la persona.</li>
+      </ul>
+    </div>
+    <div class="card gold" data-step="3">
+      <ul class="clean" style="font-size:var(--t-dense)">
+        <li>Este ejercicio es <span class="b">personal</span>.</li>
+        <li><span class="b">Nadie</span> tendrá que mostrar su mapa ni explicar públicamente sus relaciones.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card mt2 tc" data-step="4">
+    <p class="lead">Lo importante no es construir un mapa perfecto.</p>
+    <p class="lead gold b mt">Lo importante es permitirnos ver nuestra realidad.</p>
+  </div>
+</div></section><section class="slide" id="s41">
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Mientras completas tu mapa</div>
+  <div class="grid mt" style="gap:16px">
+    <div class="step-card" data-step="1"><div class="num">1</div>
+      <div class="ph">¿Quiénes son las personas que actualmente están más cerca de mí?</div></div>
+    <div class="step-card" data-step="2"><div class="num">2</div>
+      <div class="ph">¿Con quién tengo buena relación, pero podría estar más presente?</div></div>
+    <div class="step-card" data-step="3"><div class="num">3</div>
+      <div class="ph">¿Con quién me he distanciado durante los últimos años o meses?</div></div>
+  </div>
+</div></section><section class="slide" id="s42">
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Mientras completas tu mapa</div>
+  <div class="grid mt" style="gap:16px">
+    <div class="step-card" data-step="1"><div class="num">4</div>
+      <div class="ph">¿A quién veo frecuentemente, pero realmente no conozco cómo está?</div></div>
+    <div class="step-card" data-step="2"><div class="num">5</div>
+      <div class="ph">¿Hay alguien que necesita ser escuchado por mí?</div></div>
+  </div>
+</div></section><section class="slide" id="s43">
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Mientras completas tu mapa</div>
+  <div class="grid mt" style="gap:16px">
+    <div class="step-card" data-step="1"><div class="num">6</div>
+      <div class="ph">¿Hay alguien a quien necesito acompañar?</div></div>
+    <div class="step-card" data-step="2" style="border-color:rgba(230,144,155,.5);background:rgba(230,144,155,.1)">
+      <div class="num">7</div>
+      <div class="ph">¿Existe una relación que he dejado enfriar porque esperaba que la otra persona diera el primer paso?</div></div>
+  </div>
+</div></section><section class="slide" id="s44">
+<div class="wrap tight">
+  <div class="eyebrow" data-step="1">Segunda parte del ejercicio</div>
+  <h2 data-step="1">Escoge <span class="gold">tres personas</span> y coloca una letra junto a cada una</h2>
+  <div class="grid g3 mt">
+    <div class="card teal" data-step="2">
+      <div class="big-stat teal tc">C</div>
+      <p class="tc b mt">Comunicación</p>
+      <p class="tc muted mt" style="font-size:var(--t-dense)">Necesito conversar mejor con esta persona.</p>
+    </div>
+    <div class="card gold" data-step="3">
+      <div class="big-stat gold tc">P</div>
+      <p class="tc b mt">Presencia</p>
+      <p class="tc muted mt" style="font-size:var(--t-dense)">Necesito estar más disponible para esta persona.</p>
+    </div>
+    <div class="card violet" data-step="4">
+      <div class="big-stat violet tc">A</div>
+      <p class="tc b mt">Acompañamiento</p>
+      <p class="tc muted mt" style="font-size:var(--t-dense)">Necesito caminar más intencionalmente junto a esta persona.</p>
+    </div>
+  </div>
+  <div class="card mt2" data-step="5">
+    <p class="muted" style="font-size:var(--t-chip);letter-spacing:.14em;text-transform:uppercase">Por ejemplo</p>
+    <p class="lead mt">Persona A — C &nbsp;·&nbsp; Persona B — P &nbsp;·&nbsp; Persona C — A</p>
+  </div>
+</div></section><section class="slide" id="s45">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Momento 5 · Aplicar</div>
+  <h1 data-step="1" style="font-size:94px">Una persona,<br><span class="gold">un paso</span></h1>
+  <div class="card rose mt2" data-step="2" style="max-width:1250px;margin-left:auto;margin-right:auto">
+    <p class="say" style="font-size:40px;line-height:1.32">
+      No quiero que salgan de aquí pensando: ‘Tengo que mejorar todas mis relaciones’.
+      Hoy vamos a comenzar con <span class="b">una sola</span>.”</p>
+  </div>
+  <p class="lead gold b mt2" data-step="3">No necesitamos resolver toda una historia esta noche.<br>Necesitamos dar un primer paso.</p>
+</div></section><section class="slide" id="s46">
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Completa en tu hoja</div>
+  <h2 data-step="1" class="gold">MI PRIMER PASO</h2>
+  <div class="card mt" data-step="2">
+    <div class="field"><span class="lb">1. La persona a la que quiero acercarme:</span><span class="ln"></span></div>
+    <div class="field"><span class="lb">2. Lo que creo que necesita de mí:</span><span class="ln"></span></div>
+    <div class="field"><span class="lb">3. Lo que necesito mejorar en mi manera de relacionarme con ella:</span><span class="ln"></span></div>
+    <div class="field"><span class="lb">4. Mi primer paso será:</span><span class="ln"></span></div>
+    <div class="field" style="border-bottom:0"><span class="lb">5. ¿Cuándo lo haré?</span><span class="ln"></span></div>
+  </div>
+</div></section><section class="slide" id="s47">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Momento 6 · Compromiso</div>
+  <h2 data-step="1">Completa esta frase</h2>
+  <div class="card gold mt" data-step="2" style="max-width:1300px;margin-left:auto;margin-right:auto">
+    <p style="font-size:48px;line-height:1.3">
+      “Esta semana quiero ser más intencional con <span class="muted">_______________</span>”</p>
+  </div>
+  <p class="breath mt2" data-step="3">y después</p>
+  <div class="card teal mt2" data-step="3" style="max-width:1300px;margin-left:auto;margin-right:auto">
+    <p style="font-size:48px;line-height:1.3">
+      “El primer paso que voy a dar será <span class="muted">_______________</span>”</p>
+  </div>
+  <p class="muted mt2" data-step="4" style="font-size:var(--t-dense)">
+    Si alguna desea compartir, compartimos solamente <span class="b">el aprendizaje</span>, no la situación personal.</p>
+</div></section><section class="slide" id="s48">
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Reflexión final</div>
+  <p class="say" data-step="1" style="font-size:42px;line-height:1.36">
+    Durante mucho tiempo podemos pensar que amar a las personas significa simplemente estar ahí para ellas.
+    Pero hoy hemos descubierto que <span class="b gold">la presencia física, por sí sola, no siempre comunica amor</span>.</p>
+  <div class="grid g3 mt2">
+    <div class="card" data-step="2"><p style="font-size:var(--t-dense)">Podemos estar en una misma casa y vivir distantes.</p></div>
+    <div class="card" data-step="3"><p style="font-size:var(--t-dense)">Podemos sentarnos en la misma iglesia y desconocer las luchas de quien está a nuestro lado.</p></div>
+    <div class="card" data-step="4"><p style="font-size:var(--t-dense)">Podemos preguntar “¿cómo estás?” y continuar caminando sin esperar la respuesta.</p></div>
+  </div>
+  <p class="lead tc mt2 gold b" data-step="5">Pero Dios nos llama a una presencia diferente.</p>
+</div></section><section class="slide" id="s49">
+<div class="wrap">
+  <div class="card mt" data-step="1">
+    <p class="lead">Deuteronomio 6 nos presenta una fe que se transmite <span class="b gold">dentro de la vida cotidiana</span>:
+    no solamente en momentos extraordinarios, sino en la casa, en el camino, al acostarse y al levantarse.</p>
+    <div class="divider"></div>
+    <p class="lead b">Eso significa que nuestras relaciones también son espacios donde podemos
+    manifestar el carácter de Cristo.</p>
+  </div>
+  <div class="grid g3 mt2">
+    <div class="card rose" data-step="2"><p style="font-size:var(--t-dense)">Quizá hoy descubriste que alguien está más lejos de ti de lo que pensabas.</p></div>
+    <div class="card rose" data-step="3"><p style="font-size:var(--t-dense)">Quizá descubriste que has estado físicamente cerca, pero emocionalmente ausente.</p></div>
+    <div class="card rose" data-step="4"><p style="font-size:var(--t-dense)">Quizá recordaste una relación que necesita atención.</p></div>
+  </div>
+</div></section><section class="slide" id="s50">
+<div class="wrap tc">
+  <h1 data-step="1" style="font-size:66px;line-height:1.12">
+    No permitas que ese descubrimiento se convierta solamente en <span class="rose">culpa</span>.</h1>
+  <h1 data-step="2" class="mt2" style="font-size:76px;line-height:1.1">
+    Permite que se convierta en <span class="gold">propósito</span>.</h1>
+  <div class="card gold mt2" data-step="3" style="max-width:1350px;margin-left:auto;margin-right:auto">
+    <p class="lead">Porque reconocer una distancia no significa que la historia terminó.</p>
+    <p class="lead b mt">A veces significa que finalmente descubrimos dónde necesitamos
+    <span class="u">comenzar a construir un puente</span>.</p>
+  </div>
+</div></section><section class="slide" id="s51">
+<div class="wrap">
+  <h2 data-step="1">Lo que me llevo del Día 1</h2>
+  <div class="grid g2 mt">
+    <div class="card teal" data-step="2"><div class="row c"><div class="num">1</div>
+      <p class="b">Estar cerca físicamente no significa estar conectado emocionalmente.</p></div></div>
+    <div class="card gold" data-step="3"><div class="row c"><div class="num">2</div>
+      <p class="b">La presencia significativa requiere intencionalidad.</p></div></div>
+    <div class="card violet" data-step="4"><div class="row c"><div class="num">3</div>
+      <p class="b">Escuchar y acompañar también son formas de amar.</p></div></div>
+    <div class="card rose" data-step="5"><div class="row c"><div class="num">4</div>
+      <p class="b">Reconocer una distancia es el primer paso para comenzar a construir un puente.</p></div></div>
+  </div>
+</div></section><section class="slide" id="s52">
+<div class="wrap tight">
+  <h2 data-step="1">Con qué termino esta noche</h2>
+  <div class="grid mt" style="gap:13px">
+    <div class="step-card" data-step="2"><div class="num">👁️</div><div>
+      <div class="tag">Una nueva comprensión</div><div class="ph">“Cercanía física no es igual a conexión.”</div></div></div>
+    <div class="step-card" data-step="3"><div class="num">🔍</div><div>
+      <div class="tag">Una nueva mirada</div><div class="ph">“Hay relaciones que necesitan mi atención.”</div></div></div>
+    <div class="step-card" data-step="4"><div class="num">🗺️</div><div>
+      <div class="tag">Una herramienta</div><div class="ph">“Tengo mi mapa de relaciones.”</div></div></div>
+    <div class="step-card" data-step="5"><div class="num">🙋‍♀️</div><div>
+      <div class="tag">Una persona identificada</div><div class="ph">“Sé con quién necesito comenzar.”</div></div></div>
+    <div class="step-card" data-step="6" style="border-color:rgba(242,183,117,.55);background:rgba(242,183,117,.11)"><div class="num">👣</div><div>
+      <div class="tag">Un primer paso</div><div class="ph">“Sé qué puedo hacer después de este taller.”</div></div></div>
+  </div>
+</div></section><section class="slide" id="s53">
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Oremos</div>
+  <h1 data-step="1" style="font-size:80px">Oración <span class="gold">final</span></h1>
+  <div class="card mt2" data-step="2" style="max-width:1250px;margin-left:auto;margin-right:auto">
+    <p class="lead">Ponemos delante de ti a <span class="b gold">esa persona</span>
+    que cada una de nosotras ha identificado esta noche.</p>
+  </div>
+  <div class="grid g4 mt2" data-step="3" style="max-width:1300px;margin-left:auto;margin-right:auto">
+    <div class="card teal tc"><p class="b">Sensibilidad<br>para ver</p></div>
+    <div class="card gold tc"><p class="b">Sabiduría<br>para escuchar</p></div>
+    <div class="card violet tc"><p class="b">Humildad<br>para reconocer</p></div>
+    <div class="card rose tc"><p class="b">Amor<br>para acompañar</p></div>
+  </div>
+  <p class="breath mt2" data-step="4">En el nombre de Jesús · Amén</p>
+</div></section><section class="slide" id="s54">
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Nos vemos mañana</div>
+  <div class="vs mt">
+    <div class="card" data-step="1">
+      <span class="pill c">Hoy</span>
+      <h3 class="mt">Aprendimos a <span class="gold">mirar</span></h3>
+      <p class="muted" style="font-size:var(--t-dense)">Miramos nuestras relaciones, reconocimos distancias
+      y descubrimos personas a las que necesitamos acercarnos.</p>
+      <div class="divider"></div>
+      <p class="b">Identificamos <span class="rose">dónde</span> está la distancia.</p>
+    </div>
+    <div class="mid" data-step="2">→</div>
+    <div class="card teal" data-step="2">
+      <span class="pill b">Mañana</span>
+      <h3 class="mt">¿Cómo puedo <span class="teal">acercarme</span> correctamente?</h3>
+      <p class="muted" style="font-size:var(--t-dense)">Aprenderemos a escuchar, comunicarnos y acompañar
+      de una manera que realmente construya puentes.</p>
+      <div class="divider"></div>
+      <p class="b">Aprenderemos <span class="teal">cómo</span> comenzar a reducirla.</p>
+    </div>
+  </div>
+  <p class="lead tc mt2 gold b" data-step="3">Querer acercarnos es importante. También necesitamos aprender cómo.</p>
+</div></section><section class="slide" id="s55">
+<div class="wrap tc">
+  <div data-step="1">
+    <svg viewBox="0 0 760 140" style="width:min(760px,88%);height:auto">
+      <line x1="40" y1="92" x2="300" y2="92" stroke="rgba(247,241,232,.28)" stroke-width="3"></line>
+      <line x1="460" y1="92" x2="720" y2="92" stroke="rgba(247,241,232,.28)" stroke-width="3"></line>
+      <path d="M300 92 Q380 18 460 92" fill="none" stroke="#F2B775" stroke-width="5" stroke-linecap="round"></path>
+      <circle cx="300" cy="92" r="14" fill="#76C5B6"></circle>
+      <circle cx="460" cy="92" r="14" fill="#E6909B"></circle>
+    </svg>
+  </div>
+  <h1 class="mt2" data-step="2" style="font-size:78px;line-height:1.08">
+    Hoy reconocimos la distancia.<br><span class="gold">Mañana construimos el puente.</span></h1>
+  <div class="meta mt2" data-step="3"><span>Taller “Cerca y a la vez lejos”</span><span>Día 1</span></div>
+</div></section></div>
+  <div id="progress"><div id="bar" style="width: 1.78571%;"></div></div>
+</div>
+
+<div id="dock">
+  <button class="btn ghost" onclick="prev()">‹</button>
+  <button class="btn ghost" onclick="next()">›</button>
+  <button class="btn" onclick="toggleTimer()">⏱ Tiempo</button>
+  <button class="btn" onclick="toggleMenu()">☰ Índice</button>
+  <button class="btn ghost" onclick="toggleHelp()">?</button>
+</div>
+
+<div id="timer">
+  <div class="lbl">Temporizador</div>
+  <div id="tdisplay" class="">07:00</div>
+  <div class="presets">
+    <button class="tiny" onclick="setT(60)">1 min</button>
+    <button class="tiny" onclick="setT(180)">3 min</button>
+    <button class="tiny" onclick="setT(300)">5 min</button>
+    <button class="tiny" onclick="setT(420)">7 min</button>
+    <button class="tiny" onclick="setT(600)">10 min</button>
+  </div>
+  <div class="ctrl">
+    <button class="tiny" onclick="startT()">▶ Iniciar</button>
+    <button class="tiny" onclick="pauseT()">⏸ Pausar</button>
+    <button class="tiny" onclick="resetT()">↺ Reiniciar</button>
+  </div>
+</div>
+
+<div class="ov" id="menu">
+  <h3>Índice del Día 1</h3>
+  <div id="menuList"><div class="mi" onclick="go(0)"><span class="n">1</span><span>Portada</span><span class="s">Bienvenida</span></div><div class="mi" onclick="go(1)"><span class="n">2</span><span>No toda cercanía significa conexión</span><span class="s">Idea central</span></div><div class="mi" onclick="go(2)"><span class="n">3</span><span>¿De quién estás realmente cerca?</span><span class="s">Conectar</span></div><div class="mi" onclick="go(3)"><span class="n">4</span><span>Podemos estar juntas y desconectadas</span><span class="s">Conectar</span></div><div class="mi" onclick="go(4)"><span class="n">5</span><span>Dinámica: La distancia invisible</span><span class="s">Conectar</span></div><div class="mi" onclick="go(5)"><span class="n">6</span><span>Afirmación 1</span><span class="s">Conectar</span></div><div class="mi" onclick="go(6)"><span class="n">7</span><span>Afirmación 2</span><span class="s">Conectar</span></div><div class="mi" onclick="go(7)"><span class="n">8</span><span>Afirmación 3</span><span class="s">Conectar</span></div><div class="mi" onclick="go(8)"><span class="n">9</span><span>Afirmación 4</span><span class="s">Conectar</span></div><div class="mi" onclick="go(9)"><span class="n">10</span><span>Afirmación 5</span><span class="s">Conectar</span></div><div class="mi" onclick="go(10)"><span class="n">11</span><span>No estamos aquí para sentir culpa</span><span class="s">Conectar</span></div><div class="mi" onclick="go(11)"><span class="n">12</span><span>Pregunta abierta · Levanta la mano</span><span class="s">Conectar</span></div><div class="mi" onclick="go(12)"><span class="n">13</span><span>Estar cerca no siempre significa estar presente</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(13)"><span class="n">14</span><span>Idea 1 · Cercanía física no es conexión</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(14)"><span class="n">15</span><span>La ilusión de la cercanía</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(15)"><span class="n">16</span><span>Contacto o conexión</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(16)"><span class="n">17</span><span>Un ejemplo de todos los días</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(17)"><span class="n">18</span><span>Cuatro maneras de estar</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(18)"><span class="n">19</span><span>Idea 2 · La presencia requiere intencionalidad</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(19)"><span class="n">20</span><span>Deuteronomio 6:6-7</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(20)"><span class="n">21</span><span>Las relaciones se cultivan</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(21)"><span class="n">22</span><span>La intencionalidad cambia la pregunta</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(22)"><span class="n">23</span><span>Estar presente no significa resolver</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(23)"><span class="n">24</span><span>Idea 3 · Presencia, escucha y acompañamiento</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(24)"><span class="n">25</span><span>1 · Ver</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(25)"><span class="n">26</span><span>2 · Escuchar</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(26)"><span class="n">27</span><span>3 · Comprender</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(27)"><span class="n">28</span><span>4 · Acompañar</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(28)"><span class="n">29</span><span>La segunda pregunta</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(29)"><span class="n">30</span><span>Un modelo para recordar</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(30)"><span class="n">31</span><span>La familia, primer espacio de presencia</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(31)"><span class="n">32</span><span>Dónde se expresa el propósito</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(32)"><span class="n">33</span><span>Reflexión personal · 1 minuto</span><span class="s">Enseñar</span></div><div class="mi" onclick="go(33)"><span class="n">34</span><span>Casos espejo</span><span class="s">Dialogar</span></div><div class="mi" onclick="go(34)"><span class="n">35</span><span>Caso 1 · Mamá está, pero no está</span><span class="s">Dialogar</span></div><div class="mi" onclick="go(35)"><span class="n">36</span><span>Caso 2 · Nos vemos todos los domingos</span><span class="s">Dialogar</span></div><div class="mi" onclick="go(36)"><span class="n">37</span><span>Caso 3 · Ya no somos como antes</span><span class="s">Dialogar</span></div><div class="mi" onclick="go(37)"><span class="n">38</span><span>Compartamos lo que vimos</span><span class="s">Dialogar</span></div><div class="mi" onclick="go(38)"><span class="n">39</span><span>Mi mapa de relaciones</span><span class="s">Practicar</span></div><div class="mi" onclick="go(39)"><span class="n">40</span><span>Los cuatro niveles</span><span class="s">Practicar</span></div><div class="mi" onclick="go(40)"><span class="n">41</span><span>Cómo llenar mi mapa</span><span class="s">Practicar</span></div><div class="mi" onclick="go(41)"><span class="n">42</span><span>Preguntas para el mapa (1-3)</span><span class="s">Practicar</span></div><div class="mi" onclick="go(42)"><span class="n">43</span><span>Preguntas para el mapa (4-5)</span><span class="s">Practicar</span></div><div class="mi" onclick="go(43)"><span class="n">44</span><span>Preguntas para el mapa (6-7)</span><span class="s">Practicar</span></div><div class="mi" onclick="go(44)"><span class="n">45</span><span>Diagnóstico · C, P, A</span><span class="s">Practicar</span></div><div class="mi" onclick="go(45)"><span class="n">46</span><span>Una persona, un paso</span><span class="s">Aplicar</span></div><div class="mi" onclick="go(46)"><span class="n">47</span><span>Mi primer paso</span><span class="s">Aplicar</span></div><div class="mi" onclick="go(47)"><span class="n">48</span><span>Frase de compromiso</span><span class="s">Cierre</span></div><div class="mi" onclick="go(48)"><span class="n">49</span><span>Reflexión final (1)</span><span class="s">Cierre</span></div><div class="mi" onclick="go(49)"><span class="n">50</span><span>Reflexión final (2)</span><span class="s">Cierre</span></div><div class="mi" onclick="go(50)"><span class="n">51</span><span>De la culpa al propósito</span><span class="s">Cierre</span></div><div class="mi" onclick="go(51)"><span class="n">52</span><span>Lo que me llevo del Día 1</span><span class="s">Cierre</span></div><div class="mi" onclick="go(52)"><span class="n">53</span><span>Con qué termino esta noche</span><span class="s">Cierre</span></div><div class="mi" onclick="go(53)"><span class="n">54</span><span>Oración final</span><span class="s">Cierre</span></div><div class="mi" onclick="go(54)"><span class="n">55</span><span>Mañana · Día 2</span><span class="s">Cierre</span></div><div class="mi" onclick="go(55)"><span class="n">56</span><span>Cierre</span><span class="s">Cierre</span></div></div>
+</div>
+
+<div class="ov" id="help">
+  <h3>Cómo conducir la presentación</h3>
+  <div id="helpBody">
+    <p><kbd>→</kbd> o <kbd>Espacio</kbd> — avanzar (revela el contenido paso a paso)</p>
+    <p><kbd>←</kbd> — retroceder</p>
+    <p><kbd>↓</kbd> / <kbd>↑</kbd> — salta a la diapositiva siguiente o anterior completa</p>
+    <p><kbd>T</kbd> — mostrar u ocultar el temporizador</p>
+    <p><kbd>M</kbd> — índice de diapositivas</p>
+    <p><kbd>F</kbd> — pantalla completa</p>
+    <p><kbd>N</kbd> — atenuar la pantalla (para los momentos de silencio)</p>
+    <p><kbd>Esc</kbd> — cerrar esta ventana</p>
+    <div class="divider"></div>
+    <p class="muted">Las tarjetas con el texto «toca para ver» son interactivas: haz clic sobre ellas delante de la audiencia. En el mapa de relaciones puedes hacer clic en cada nivel o en cada círculo.</p>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONTENIDO DE LAS DIAPOSITIVAS
+   Solo lo que las participantes necesitan ver.
+   ============================================================ */
+const SLIDES = [
+
+/* ---------- 1. PORTADA ---------- */
+{m:"Bienvenida", t:"Portada", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Taller para damas · Eje 3: Propósito Encendido</div>
+  <h1 class="cover-title" data-step="1">Cerca<br><span class="far">y a la vez lejos</span></h1>
+  <div class="mt2" data-step="2">
+    <svg viewBox="0 0 760 120" style="width:min(760px,86%);height:auto">
+      <line x1="40" y1="78" x2="300" y2="78" stroke="rgba(247,241,232,.28)" stroke-width="3"/>
+      <line x1="460" y1="78" x2="720" y2="78" stroke="rgba(247,241,232,.28)" stroke-width="3"/>
+      <path d="M300 78 Q380 10 460 78" fill="none" stroke="#F2B775" stroke-width="4" stroke-dasharray="9 11" stroke-linecap="round"/>
+      <circle cx="300" cy="78" r="13" fill="#76C5B6"/>
+      <circle cx="460" cy="78" r="13" fill="#E6909B"/>
+    </svg>
+  </div>
+  <h3 class="mt2 gold" data-step="3" style="letter-spacing:.06em">DÍA 1 — ¿Estoy realmente cerca?</h3>
+  <div class="meta mt2" data-step="4">
+    <span>Jueves 15 de octubre</span>
+    <span>105 minutos</span>
+  </div>
+</div>`},
+
+/* ---------- 2. IDEA CENTRAL ---------- */
+{m:"Idea central", t:"No toda cercanía significa conexión", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">La frase que nos acompañará todo el día</div>
+  <h1 data-step="1" style="font-size:92px;line-height:1.05">
+    “No toda cercanía<br>significa <span class="gold">conexión</span>.”
+  </h1>
+  <div class="mt2" data-step="2" style="max-width:1200px;margin-left:auto;margin-right:auto">
+    <p class="lead muted">Una persona puede estar <span class="ink b">físicamente cerca</span>
+    y <span class="rose b">emocionalmente lejos</span>.</p>
+  </div>
+  <div class="card gold mt2" data-step="3" style="max-width:1150px;margin-left:auto;margin-right:auto">
+    <p class="lead"><span class="b">La pregunta que atraviesa todo el taller:</span><br>
+    “¿Estoy realmente cerca de las personas que Dios ha colocado cerca de mí?”</p>
+  </div>
+</div>`},
+
+/* ---------- 3. PREGUNTA DE APERTURA ---------- */
+{m:"Conectar", t:"¿De quién estás realmente cerca?", c:`
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Momento 1 · Conectar</div>
+  <h2 data-step="1">¿De quién estás <span class="gold">realmente</span> cerca?</h2>
+  <div class="grid g2 mt">
+    <div class="card teal" data-step="2">
+      <span class="pill b" style="background:rgba(118,197,182,.2);color:var(--teal);border:1px solid rgba(118,197,182,.45)">Quién está cerca de mí</span>
+      <p class="mt" style="font-size:var(--t-sub);line-height:1.3">Mi esposo. Mis hijos. Mis padres. Mis hermanas. Mis amigas. Quienes sirven conmigo en la iglesia.</p>
+      <p class="muted mt" style="font-size:var(--t-dense)">Cercanía <span class="b">física</span>.</p>
+    </div>
+    <div class="card rose" data-step="3">
+      <span class="pill a">Quién está cerca de mi corazón</span>
+      <p class="mt" style="font-size:var(--t-sub);line-height:1.3">¿Con quién comparto verdaderamente mi vida… y no solamente un espacio?</p>
+      <p class="muted mt" style="font-size:var(--t-dense)">Cercanía <span class="b">del corazón</span>.</p>
+    </div>
+  </div>
+  <div class="mt2" data-step="4">
+    <p class="say">Hay una diferencia enorme entre <span class="u b">compartir un espacio</span> con alguien
+    y <span class="u b">compartir verdaderamente nuestra vida</span> con esa persona.”</p>
+  </div>
+</div>`},
+
+/* ---------- 4. PODEMOS... ---------- */
+{m:"Conectar", t:"Podemos estar juntas y desconectadas", c:`
+<div class="wrap">
+  <h2 data-step="1">Podemos estar juntas… y estar desconectadas</h2>
+  <div class="grid g3 mt">
+    <div class="card" data-step="2">
+      <div style="font-size:51.2px;line-height:1;margin-bottom:12px">🏠</div>
+      <p>Vivir bajo el <span class="b">mismo techo</span> y casi no conversar.</p>
+    </div>
+    <div class="card" data-step="3">
+      <div style="font-size:51.2px;line-height:1;margin-bottom:12px">🍽️</div>
+      <p>Sentarnos juntas a la <span class="b">misma mesa</span> y estar completamente desconectadas.</p>
+    </div>
+    <div class="card" data-step="4">
+      <div style="font-size:51.2px;line-height:1;margin-bottom:12px">⛪</div>
+      <p>Asistir a la <span class="b">misma iglesia</span>, servir en el mismo ministerio… y no saber que
+      la persona de al lado atraviesa una <span class="rose b">lucha silenciosa</span>.</p>
+    </div>
+  </div>
+  <div class="card gold mt2" data-step="5">
+    <p class="lead">A veces las personas que físicamente están <span class="b">más cerca</span> de nosotras
+    son precisamente aquellas de quienes emocionalmente <span class="b rose">nos hemos alejado</span>.</p>
+  </div>
+</div>`},
+
+/* ---------- 5. DINÁMICA: título ---------- */
+{m:"Conectar", t:"Dinámica: La distancia invisible", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Dinámica</div>
+  <h1 data-step="1" style="font-size:94px">La distancia<br><span class="rose">invisible</span></h1>
+  <div class="card mt2" data-step="2" style="max-width:1050px;margin-left:auto;margin-right:auto">
+    <p class="lead">No tienes que hablar ni explicar nada.</p>
+    <p class="lead muted mt">Solamente piensa si cada afirmación <span class="ink b">describe alguna situación de tu vida</span>.</p>
+  </div>
+  <p class="breath mt2" data-step="3">Respira · Escucha · Piensa</p>
+</div>`},
+
+/* ---------- 6-10. AFIRMACIONES ---------- */
+{m:"Conectar", t:"Afirmación 1", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Afirmación 1 de 5</div>
+  <div class="card rose" data-step="1" style="max-width:1300px;margin:0 auto">
+    <p style="font-size:54px;line-height:1.25;font-style:italic">
+      “Hay una persona que está <span class="b">muy cerca de mí físicamente</span>,
+      pero con quien ya casi no converso de cosas importantes.”</p>
+  </div>
+  <p class="breath mt2" data-step="2">· · · Pausa · · ·</p>
+</div>`},
+
+{m:"Conectar", t:"Afirmación 2", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Afirmación 2 de 5</div>
+  <div class="card rose" data-step="1" style="max-width:1300px;margin:0 auto">
+    <p style="font-size:54px;line-height:1.25;font-style:italic">
+      “Hay alguien <span class="b">a quien amo</span>, pero no sé realmente
+      qué está viviendo en este momento.”</p>
+  </div>
+  <p class="breath mt2" data-step="2">· · · Pausa · · ·</p>
+</div>`},
+
+{m:"Conectar", t:"Afirmación 3", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Afirmación 3 de 5</div>
+  <div class="card rose" data-step="1" style="max-width:1300px;margin:0 auto">
+    <p style="font-size:54px;line-height:1.25;font-style:italic">
+      “Hay una persona que me habla, pero probablemente
+      <span class="b">no se siente verdaderamente escuchada</span> por mí.”</p>
+  </div>
+  <p class="breath mt2" data-step="2">· · · Pausa · · ·</p>
+</div>`},
+
+{m:"Conectar", t:"Afirmación 4", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Afirmación 4 de 5</div>
+  <div class="card rose" data-step="1" style="max-width:1300px;margin:0 auto">
+    <p style="font-size:54px;line-height:1.25;font-style:italic">
+      “Hay alguien de quien sé que necesita acompañamiento, pero siempre estoy
+      <span class="b">esperando encontrar el momento adecuado</span> para acercarme.”</p>
+  </div>
+  <p class="breath mt2" data-step="2">· · · Pausa · · ·</p>
+</div>`},
+
+{m:"Conectar", t:"Afirmación 5", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Afirmación 5 de 5</div>
+  <div class="card rose" data-step="1" style="max-width:1300px;margin:0 auto">
+    <p style="font-size:54px;line-height:1.25;font-style:italic">
+      “Hay una relación que antes era cercana y que
+      <span class="b">poco a poco se ha ido enfriando</span>.”</p>
+  </div>
+  <p class="breath mt2" data-step="2">· · · Pausa · · ·</p>
+</div>`},
+
+/* ---------- 11. NO ES CULPA ---------- */
+{m:"Conectar", t:"No estamos aquí para sentir culpa", c:`
+<div class="wrap tc">
+  <div class="card teal" data-step="1" style="max-width:1350px;margin:0 auto">
+    <p class="say" style="font-size:44px;line-height:1.3">
+      Si alguna de estas afirmaciones tocó alguna parte de nuestra realidad,
+      <span class="b">no estamos aquí para sentir culpa</span>. Estamos aquí para aprender.”</p>
+  </div>
+  <h2 class="mt2" data-step="2" style="max-width:1250px;margin-left:auto;margin-right:auto">
+    Reconocer una distancia no significa que todo esté perdido.
+  </h2>
+  <p class="lead gold b" data-step="3">Muchas veces reconocerla es el primer paso para comenzar a construir un puente.</p>
+</div>`},
+
+/* ---------- 12. PREGUNTA DE TRANSICIÓN (interactiva) ---------- */
+{m:"Conectar", t:"Pregunta abierta · Levanta la mano", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Conversemos · Levanta la mano</div>
+  <h2 data-step="1" style="max-width:1400px;margin-left:auto;margin-right:auto">
+    ¿Puede alguien estar <span class="teal">físicamente cerca</span> de nosotras
+    y al mismo tiempo <span class="rose">sentirse lejos</span> de nosotras?
+  </h2>
+  <div class="tally mt2" data-step="2">
+    <div class="tbtn si" onclick="tally(this)"><div class="val">0</div><div class="lab">Sí</div></div>
+    <div class="tbtn no" onclick="tally(this)"><div class="val">0</div><div class="lab">No</div></div>
+  </div>
+  <p class="muted mt" style="font-size:var(--t-chip)" data-step="2">Toca cada cuadro para ir contando las manos</p>
+  <div class="card gold mt2" data-step="3" style="max-width:1000px;margin-left:auto;margin-right:auto">
+    <p class="lead b">Sí. Y justamente de eso vamos a conversar hoy.</p>
+  </div>
+</div>`},
+
+/* ---------- 13. ENSEÑAR: portada ---------- */
+{m:"Enseñar", t:"Estar cerca no siempre significa estar presente", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Momento 2 · Enseñar</div>
+  <h1 data-step="1" style="font-size:84px;line-height:1.06">
+    Estar cerca<br>no siempre significa<br><span class="gold">estar presente</span></h1>
+  <div class="grid g3 mt2" style="max-width:1400px;margin-left:auto;margin-right:auto">
+    <div class="card" data-step="2"><div class="num" style="margin:0 auto 14px">1</div>
+      <p class="b">Cercanía física no es lo mismo que conexión</p></div>
+    <div class="card" data-step="3"><div class="num" style="margin:0 auto 14px">2</div>
+      <p class="b">La presencia significativa requiere intencionalidad</p></div>
+    <div class="card" data-step="4"><div class="num" style="margin:0 auto 14px">3</div>
+      <p class="b">Una relación cercana necesita presencia, escucha y acompañamiento</p></div>
+  </div>
+</div>`},
+
+/* ---------- 14. IDEA 1 ---------- */
+{m:"Enseñar", t:"Idea 1 · Cercanía física no es conexión", c:`
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Idea central 1</div>
+  <h1 data-step="1" style="font-size:76px;line-height:1.06">
+    Cercanía física<br>no es lo mismo<br>que <span class="gold">conexión</span></h1>
+  <div class="card mt2" data-step="2" style="max-width:1300px">
+    <p class="lead">Vivimos rodeadas de personas: familia, hermanos en la iglesia, amigas, compañeras de ministerio, vecinas.</p>
+    <p class="lead gold b mt">Pero la <span class="u">cantidad</span> de contacto no determina la <span class="u">calidad</span> de una relación.</p>
+  </div>
+</div>`},
+
+/* ---------- 15. LA ILUSIÓN DE LA CERCANÍA ---------- */
+{m:"Enseñar", t:"La ilusión de la cercanía", c:`
+<div class="wrap">
+  <h2 data-step="1">La ilusión de la cercanía</h2>
+  <div class="grid g2 mt">
+    <div class="card" data-step="2"><p>Podemos <span class="b">hablar mucho</span><br>y comunicarnos poco.</p></div>
+    <div class="card" data-step="3"><p>Podemos <span class="b">estar juntas</span><br>y sentirnos solas.</p></div>
+    <div class="card" data-step="4"><p>Podemos preguntar <span class="b">“¿cómo estás?”</span><br>y no estar preparadas para escuchar la respuesta.</p></div>
+    <div class="card" data-step="5"><p>Podemos decir <span class="b">“cuenta conmigo”</span><br>y nunca tener tiempo para acompañar.</p></div>
+  </div>
+  <p class="lead tc mt2 gold b" data-step="6">Por eso debemos diferenciar entre contacto y conexión.</p>
+</div>`},
+
+/* ---------- 16. CONTACTO VS CONEXIÓN ---------- */
+{m:"Enseñar", t:"Contacto o conexión", c:`
+<div class="wrap">
+  <h2 class="tc" data-step="1">Contacto <span class="muted">o</span> conexión</h2>
+  <div class="vs mt">
+    <div class="card rose" data-step="2">
+      <span class="pill a">Contacto</span>
+      <p class="mt" style="font-size:var(--t-sub);line-height:1.3">“¿Estoy <span class="b">físicamente</span> con esta persona?”</p>
+      <div class="divider"></div>
+      <p class="muted">El contacto produce <span class="ink b">convivencia</span>.</p>
+    </div>
+    <div class="mid" data-step="2">VS</div>
+    <div class="card teal" data-step="3">
+      <span class="pill b">Conexión</span>
+      <p class="mt" style="font-size:var(--t-sub);line-height:1.3">“¿Estoy <span class="b">verdaderamente disponible</span> para esta persona?”</p>
+      <div class="divider"></div>
+      <p class="muted">La conexión produce <span class="ink b">conocimiento, confianza, comprensión y acompañamiento</span>.</p>
+    </div>
+  </div>
+</div>`},
+
+/* ---------- 17. EJEMPLO COTIDIANO ---------- */
+{m:"Enseñar", t:"Un ejemplo de todos los días", c:`
+<div class="wrap tight">
+  <div class="eyebrow" data-step="1">Un ejemplo de todos los días</div>
+  <div class="g-21 grid">
+    <div data-step="1">
+      <p class="say" style="font-size:38px;line-height:1.34">
+        Imaginemos una madre que pasa todo el día con sus hijos. Prepara la comida, limpia, organiza la casa,
+        pregunta si hicieron sus tareas, los lleva a sus actividades y está físicamente presente.
+        Sin embargo, cuando su hija intenta contarle algo importante, ella está mirando el celular,
+        respondiendo mensajes o pensando en todo lo que todavía tiene que hacer.”</p>
+    </div>
+    <div class="card gold" data-step="2">
+      <p style="font-size:var(--t-sub);line-height:1.3">Esa madre <span class="b">está presente</span> físicamente.</p>
+      <div class="divider"></div>
+      <p style="font-size:var(--t-sub);line-height:1.3" class="gold b">Pero ¿su hija experimenta esa presencia como una verdadera conexión?</p>
+    </div>
+  </div>
+  <div class="card mt2" data-step="3">
+    <p class="muted">La intención no es condenar a nadie. Es ver que
+    <span class="ink b">la presencia puede existir físicamente sin convertirse automáticamente
+    en una experiencia de conexión para la otra persona</span>.</p>
+  </div>
+</div>`},
+
+/* ---------- 18. LA ESCALERA ---------- */
+{m:"Enseñar", t:"Cuatro maneras de estar", c:`
+<div class="wrap">
+  <h2 data-step="1">Cuatro maneras de estar <span class="muted">— y lo que cada una dice</span></h2>
+  <div class="grid mt" style="gap:14px">
+    <div class="step-card" data-step="2">
+      <div class="num">1</div><div>
+        <div class="tag">Cercanía física</div>
+        <div class="ph">“Estoy contigo.”</div></div>
+    </div>
+    <div class="step-card" data-step="3" style="margin-left:32px">
+      <div class="num">2</div><div>
+        <div class="tag">Presencia intencional</div>
+        <div class="ph">“Estoy disponible para ti.”</div></div>
+    </div>
+    <div class="step-card" data-step="4" style="margin-left:64px">
+      <div class="num">3</div><div>
+        <div class="tag">Conexión</div>
+        <div class="ph">“Quiero comprenderte.”</div></div>
+    </div>
+    <div class="step-card" data-step="5" style="margin-left:96px;border-color:rgba(242,183,117,.5);background:rgba(242,183,117,.1)">
+      <div class="num">4</div><div>
+        <div class="tag">Acompañamiento</div>
+        <div class="ph">“No solamente quiero saber lo que estás viviendo; quiero caminar contigo cuando corresponda.”</div></div>
+    </div>
+  </div>
+</div>`},
+
+/* ---------- 19. IDEA 2 ---------- */
+{m:"Enseñar", t:"Idea 2 · La presencia requiere intencionalidad", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Idea central 2</div>
+  <h1 data-step="1" style="font-size:80px;line-height:1.06">
+    La presencia significativa<br>requiere <span class="gold">intencionalidad</span></h1>
+  <p class="lead muted mt2" data-step="2">Nada de lo que más importa en una relación aparece solo.</p>
+</div>`},
+
+/* ---------- 20. DEUTERONOMIO ---------- */
+{m:"Enseñar", t:"Deuteronomio 6:6-7", c:`
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Fundamento bíblico</div>
+  <div class="verse" data-step="1">
+    “Y estas palabras que yo te mando hoy, estarán sobre tu corazón; y las repetirás a tus hijos,
+    y hablarás de ellas estando en tu casa, y andando por el camino, y al acostarte, y cuando te levantes.”
+    <span class="ref">Deuteronomio 6:6-7</span>
+  </div>
+  <div class="grid g4 mt2">
+    <div class="card teal tc" data-step="2"><div style="font-size:44.8px;margin-bottom:8px">🏡</div><p class="b">Estando en casa</p></div>
+    <div class="card teal tc" data-step="3"><div style="font-size:44.8px;margin-bottom:8px">🚶‍♀️</div><p class="b">Andando por el camino</p></div>
+    <div class="card teal tc" data-step="4"><div style="font-size:44.8px;margin-bottom:8px">🌙</div><p class="b">Al acostarte</p></div>
+    <div class="card teal tc" data-step="5"><div style="font-size:44.8px;margin-bottom:8px">🌅</div><p class="b">Cuando te levantes</p></div>
+  </div>
+  <p class="lead tc mt2 gold b" data-step="6">La formación espiritual ocurre <span class="u">dentro de la vida</span>.</p>
+</div>`},
+
+/* ---------- 21. SE CULTIVAN ---------- */
+{m:"Enseñar", t:"Las relaciones se cultivan", c:`
+<div class="wrap tc">
+  <h1 data-step="1" style="font-size:70px;line-height:1.1;max-width:1450px;margin:0 auto">
+    Las relaciones significativas no se construyen solamente mediante <span class="rose">grandes momentos</span>;
+    se construyen mediante <span class="gold">pequeños momentos intencionales</span> repetidos a lo largo del tiempo.
+  </h1>
+  <div class="card mt2" data-step="2" style="max-width:1200px;margin-left:auto;margin-right:auto">
+    <p class="lead">La fe, el afecto, la confianza, la comunicación y el acompañamiento
+    <span class="b rose">no aparecen espontáneamente</span>.</p>
+    <p class="lead gold b mt">Se cultivan.</p>
+  </div>
+</div>`},
+
+/* ---------- 22. LA INTENCIONALIDAD CAMBIA LA PREGUNTA (flip) ---------- */
+{m:"Enseñar", t:"La intencionalidad cambia la pregunta", c:`
+<div class="wrap">
+  <h2 data-step="1">La intencionalidad <span class="gold">cambia la pregunta</span></h2>
+  <p class="muted mb" data-step="1" style="font-size:var(--t-chip)">Toca cada tarjeta para descubrir el cambio</p>
+  <div class="grid g3">
+    <div class="flip" data-step="2" onclick="flip(this)">
+      <div class="front">
+        <span class="pill a">Poco intencional</span>
+        <p class="q mt">“¿Por qué mi familia no me cuenta sus cosas?”</p>
+        <p class="hint">toca para ver →</p>
+      </div>
+      <div class="back">
+        <span class="pill b">Intencional</span>
+        <p class="q mt b">“¿He creado un ambiente donde mi familia pueda hablar conmigo?”</p>
+      </div>
+    </div>
+    <div class="flip" data-step="3" onclick="flip(this)">
+      <div class="front">
+        <span class="pill a">Poco intencional</span>
+        <p class="q mt">“Mis hijos saben que los amo.”</p>
+        <p class="hint">toca para ver →</p>
+      </div>
+      <div class="back">
+        <span class="pill b">Intencional</span>
+        <p class="q mt b">“¿Mis hijos están experimentando mi amor?”</p>
+      </div>
+    </div>
+    <div class="flip" data-step="4" onclick="flip(this)">
+      <div class="front">
+        <span class="pill a">Poco intencional</span>
+        <p class="q mt">“Ella sabe que puede contar conmigo.”</p>
+        <p class="hint">toca para ver →</p>
+      </div>
+      <div class="back">
+        <span class="pill b">Intencional</span>
+        <p class="q mt b">“Voy a buscarla, escucharla y acompañarla.”</p>
+      </div>
+    </div>
+  </div>
+</div>`},
+
+/* ---------- 23. LA PRESENCIA NO SIEMPRE SIGNIFICA RESOLVER ---------- */
+{m:"Enseñar", t:"Estar presente no significa resolver", c:`
+<div class="wrap">
+  <h2 data-step="1">Estar presente <span class="rose">no</span> significa resolver</h2>
+  <div class="grid g2 mt">
+    <div class="card rose" data-step="2">
+      <span class="pill a">Estar presente no significa</span>
+      <ul class="clean cross mt" style="font-size:var(--t-dense)">
+        <li>Tener respuesta para todo.</li>
+        <li>Solucionar todos los problemas.</li>
+        <li>Asumir responsabilidades que pertenecen a otra persona.</li>
+        <li>Convertirnos en terapeuta, consejera o salvadora de todos.</li>
+      </ul>
+    </div>
+    <div class="card teal" data-step="3">
+      <span class="pill b">A veces acompañar significa</span>
+      <ul class="clean check mt" style="font-size:var(--t-dense)">
+        <li>“Estoy aquí. Te escucho. No tienes que atravesar esto sola.”</li>
+        <li>“Voy a orar contigo.”</li>
+        <li>“Esto requiere una ayuda que yo no puedo darte sola. Podemos buscar apoyo pastoral o profesional.”</li>
+      </ul>
+    </div>
+  </div>
+</div>`},
+
+/* ---------- 24. IDEA 3 ---------- */
+{m:"Enseñar", t:"Idea 3 · Presencia, escucha y acompañamiento", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Idea central 3</div>
+  <h1 data-step="1" style="font-size:74px;line-height:1.08;max-width:1400px;margin:0 auto">
+    Una relación cercana necesita<br>
+    <span class="gold">presencia</span>, <span class="teal">escucha</span> y <span class="violet">acompañamiento</span>
+  </h1>
+  <p class="lead muted mt2" data-step="2">Cuatro dimensiones de una presencia significativa</p>
+</div>`},
+
+/* ---------- 25. VER ---------- */
+{m:"Enseñar", t:"1 · Ver", c:`
+<div class="wrap">
+  <div class="row c mb" data-step="1">
+    <div class="num">1</div>
+    <h2 style="margin:0">VER <span class="muted" style="font-size:var(--t-sub)">— desarrollar sensibilidad</span></h2>
+  </div>
+  <p class="lead" data-step="1">No solamente mirar su rostro, sino <span class="b gold">observar cambios</span>.</p>
+  <div class="grid g3 mt2">
+    <div class="card" data-step="2"><p>¿Está diferente?</p></div>
+    <div class="card" data-step="2"><p>¿Está más callada?</p></div>
+    <div class="card" data-step="3"><p>¿Está evitando conversar?</p></div>
+    <div class="card" data-step="3"><p>¿Está cansada?</p></div>
+    <div class="card" data-step="4"><p>¿Ha dejado de participar?</p></div>
+    <div class="card" data-step="4"><p>¿Hay algo que parece estar afectándola?</p></div>
+  </div>
+</div>`},
+
+/* ---------- 26. ESCUCHAR ---------- */
+{m:"Enseñar", t:"2 · Escuchar", c:`
+<div class="wrap tight">
+  <div class="row c mb" data-step="1">
+    <div class="num">2</div>
+    <h2 style="margin:0">ESCUCHAR <span class="muted" style="font-size:var(--t-sub)">— comprender antes de reaccionar</span></h2>
+  </div>
+  <div class="card rose" data-step="1">
+    <p class="lead">Escuchar <span class="b">no</span> significa esperar que la otra persona termine para poder responder.</p>
+  </div>
+  <div class="grid g2 mt2">
+    <div class="card" data-step="2">
+      <p>Una persona puede hablar <span class="b">diez minutos</span>…<br>y no sentirse escuchada.</p>
+    </div>
+    <div class="card teal" data-step="3">
+      <p>Otra puede decir solamente: <span class="b">“Estoy cansada.”</span><br>
+      y encontrar a alguien que se detiene y pregunta:</p>
+      <p class="lead gold b mt">“¿Quieres contarme qué está pasando?”</p>
+    </div>
+  </div>
+  <p class="lead tc mt2 gold b" data-step="4">Esa segunda pregunta puede abrir una puerta que llevaba mucho tiempo cerrada.</p>
+</div>`},
+
+/* ---------- 27. COMPRENDER ---------- */
+{m:"Enseñar", t:"3 · Comprender", c:`
+<div class="wrap">
+  <div class="row c mb" data-step="1">
+    <div class="num">3</div>
+    <h2 style="margin:0">COMPRENDER <span class="muted" style="font-size:var(--t-sub)">— no es estar de acuerdo</span></h2>
+  </div>
+  <div class="grid mt" style="gap:16px">
+    <div class="card" data-step="2"><p>Podemos <span class="b teal">comprender el dolor</span> de una persona
+      sin <span class="b rose">aprobar todas sus decisiones</span>.</p></div>
+    <div class="card" data-step="3"><p>Podemos <span class="b teal">reconocer una emoción</span>
+      sin <span class="b rose">justificar una conducta</span>.</p></div>
+  </div>
+  <div class="vs mt2">
+    <div class="card teal" data-step="4"><p class="lead">“Entiendo que esto te haya dolido.”</p></div>
+    <div class="mid" data-step="4">no es</div>
+    <div class="card rose" data-step="4"><p class="lead">“Todo lo que hiciste estuvo bien.”</p></div>
+  </div>
+</div>`},
+
+/* ---------- 28. ACOMPAÑAR ---------- */
+{m:"Enseñar", t:"4 · Acompañar", c:`
+<div class="wrap">
+  <div class="row c mb" data-step="1">
+    <div class="num">4</div>
+    <h2 style="margin:0">ACOMPAÑAR <span class="muted" style="font-size:var(--t-sub)">— presencia responsable</span></h2>
+  </div>
+  <div class="grid g3" data-step="2" style="gap:12px">
+    <div class="card"><p class="tc">Llamar</p></div>
+    <div class="card"><p class="tc">Visitar</p></div>
+    <div class="card"><p class="tc">Conversar</p></div>
+  </div>
+  <div class="grid g3 mt" data-step="3" style="gap:12px">
+    <div class="card"><p class="tc">Orar</p></div>
+    <div class="card"><p class="tc">Enviar un mensaje</p></div>
+    <div class="card"><p class="tc">Ofrecer ayuda</p></div>
+  </div>
+  <div class="grid g3 mt" data-step="4" style="gap:12px">
+    <div class="card"><p class="tc">Recordar una fecha</p></div>
+    <div class="card"><p class="tc">Preguntar nuevamente cómo sigue</p></div>
+    <div class="card"><p class="tc">Caminar junto a alguien durante un proceso</p></div>
+  </div>
+  <div class="card gold mt2" data-step="5">
+    <p class="lead">La diferencia fundamental es que el acompañamiento incluye <span class="b u">continuidad</span>.</p>
+  </div>
+</div>`},
+
+/* ---------- 29. LA SEGUNDA PREGUNTA ---------- */
+{m:"Enseñar", t:"La segunda pregunta", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">La diferencia está en la segunda pregunta</div>
+  <div class="card" data-step="1" style="max-width:1200px;margin:0 auto">
+    <p class="lead muted">No es solamente:</p>
+    <p style="font-size:46px;font-weight:700" class="mt">“¿Cómo estás?”</p>
+  </div>
+  <p class="breath mt2" data-step="2">sino también</p>
+  <div class="card gold mt2" data-step="2" style="max-width:1200px;margin:0 auto">
+    <p style="font-size:44px;font-weight:700;line-height:1.3">
+      “La semana pasada me contaste que estabas pasando por algo. <span class="gold">¿Cómo sigues?</span>”</p>
+  </div>
+  <div class="grid g3 mt2" data-step="3" style="max-width:1100px;margin-left:auto;margin-right:auto">
+    <div class="card teal"><p class="b tc">“Te escuché.”</p></div>
+    <div class="card teal"><p class="b tc">“Me importó.”</p></div>
+    <div class="card teal"><p class="b tc">“Te recuerdo.”</p></div>
+  </div>
+</div>`},
+
+/* ---------- 30. MODELO ---------- */
+{m:"Enseñar", t:"Un modelo para recordar", c:`
+<div class="wrap">
+  <h2 class="tc" data-step="1">Un modelo para recordar</h2>
+  <div class="flow mt2">
+    <div class="node" data-step="2" style="border-color:rgba(118,197,182,.5);background:rgba(118,197,182,.1)">
+      <div class="ic">👁️</div><div class="nm teal">VER</div></div>
+    <div class="arr" data-step="3">→</div>
+    <div class="node" data-step="3" style="border-color:rgba(242,183,117,.5);background:rgba(242,183,117,.1)">
+      <div class="ic">👂</div><div class="nm gold">ESCUCHAR</div></div>
+    <div class="arr" data-step="4">→</div>
+    <div class="node" data-step="4" style="border-color:rgba(168,146,224,.5);background:rgba(168,146,224,.1)">
+      <div class="ic">💭</div><div class="nm violet">COMPRENDER</div></div>
+    <div class="arr" data-step="5">→</div>
+    <div class="node" data-step="5" style="border-color:rgba(230,144,155,.5);background:rgba(230,144,155,.1)">
+      <div class="ic">🤝</div><div class="nm rose">ACOMPAÑAR</div></div>
+  </div>
+  <div class="card mt2" data-step="6">
+    <p class="say" style="font-size:36px;line-height:1.34">
+      Quizá muchas veces queremos comenzar directamente aconsejando. Pero
+      <span class="b">antes de aconsejar necesitamos aprender a ver</span>.
+      Antes de responder necesitamos escuchar. Antes de corregir necesitamos comprender.
+      Y antes de pensar que ya hicimos suficiente necesitamos preguntarnos si debemos acompañar.”</p>
+  </div>
+</div>`},
+
+/* ---------- 31. LA FAMILIA COMO PRIMER ESPACIO ---------- */
+{m:"Enseñar", t:"La familia, primer espacio de presencia", c:`
+<div class="wrap tight">
+  <h2 data-step="1">La vida espiritual no ocurre únicamente en espacios formales</h2>
+  <div class="grid g2 mt">
+    <div class="card" data-step="2">
+      <span class="pill c">Es importante</span>
+      <ul class="clean mt tight" style="font-size:var(--t-dense)">
+        <li>La iglesia</li><li>El ministerio</li><li>Los cultos</li><li>Las reuniones</li>
+      </ul>
+    </div>
+    <div class="card teal" data-step="3">
+      <span class="pill b">Pero la fe también se expresa en</span>
+      <ul class="clean check mt tight" style="font-size:var(--t-dense);line-height:1.22">
+        <li>La conversación cotidiana</li><li>La mesa</li><li>El camino</li>
+        <li>Los momentos difíciles</li><li>Las decisiones</li><li>Los conflictos</li>
+        <li>Los pequeños hábitos familiares</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card gold mt" data-step="4">
+    <p class="lead">La mujer cristiana no está llamada únicamente a desarrollar actividades espirituales,
+    sino a <span class="b">encarnar una presencia que comunique el amor de Dios</span> en sus relaciones cotidianas.</p>
+  </div>
+</div>`},
+
+/* ---------- 32. PROPÓSITO ---------- */
+{m:"Enseñar", t:"Dónde se expresa el propósito", c:`
+<div class="wrap tc">
+  <h1 data-step="1" style="font-size:66px;line-height:1.12;max-width:1400px;margin:0 auto">
+    El propósito no se expresa solamente en <span class="muted">grandes proyectos ministeriales</span>.
+  </h1>
+  <h1 data-step="2" class="mt2" style="font-size:66px;line-height:1.12;max-width:1400px;margin-left:auto;margin-right:auto">
+    También se expresa en <span class="gold">la manera en que una mujer acompaña a las personas
+    que Dios ha colocado alrededor de ella</span>.
+  </h1>
+</div>`},
+
+/* ---------- 33. REFLEXIÓN INDIVIDUAL (silencio 1 min) ---------- */
+{m:"Enseñar", t:"Reflexión personal · 1 minuto", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Reflexión personal · en silencio</div>
+  <h1 data-step="1" style="font-size:62px;line-height:1.14;max-width:1450px;margin:0 auto">
+    Si las personas que viven conmigo tuvieran que describir mi presencia en sus vidas,
+    ¿dirían que <span class="gold">me siento cerca</span> o que <span class="rose">simplemente estoy cerca</span>?
+  </h1>
+  <p class="muted lead mt2" data-step="2">Nadie tiene que responder en voz alta.</p>
+  <button class="btn mt2" data-step="2" onclick="setT(60);startT();showTimer()"
+    style="font-size:var(--t-chip);padding:14px 26px">⏱ Un minuto de silencio</button>
+</div>`},
+
+/* ---------- 34. DIALOGAR: portada ---------- */
+{m:"Dialogar", t:"Casos espejo", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Momento 3 · Dialogar</div>
+  <h1 data-step="1" style="font-size:96px">Casos <span class="gold">espejo</span></h1>
+  <div class="grid g3 mt2" style="max-width:1400px;margin-left:auto;margin-right:auto">
+    <div class="card" data-step="2"><div class="num" style="margin:0 auto 12px">👥</div>
+      <p class="b">Grupos de 4 a 6 participantes</p></div>
+    <div class="card" data-step="3"><div class="num" style="margin:0 auto 12px">📄</div>
+      <p class="b">Cada grupo recibe un caso</p></div>
+    <div class="card" data-step="4"><div class="num" style="margin:0 auto 12px">⏱</div>
+      <p class="b">7 minutos para analizarlo</p></div>
+  </div>
+  <div class="card teal mt2" data-step="5" style="max-width:1150px;margin-left:auto;margin-right:auto">
+    <p class="lead">Son casos <span class="b">ficticios</span>. No vamos a contar situaciones personales:
+    vamos a aprender juntas de lo que vemos en el caso.</p>
+  </div>
+</div>`},
+
+/* ---------- 35. CASO 1 ---------- */
+{m:"Dialogar", t:"Caso 1 · Mamá está, pero no está", c:`
+<div class="wrap tight">
+  <div class="eyebrow" data-step="1">Caso 1</div>
+  <h3 data-step="1" class="gold">“Mamá está, pero no está”</h3>
+  <div class="caso mt">
+    <div class="texto" data-step="1">
+      <p>María tiene dos hijos adolescentes. Es una mujer responsable, trabajadora y comprometida con la iglesia.
+      Procura que sus hijos tengan todo lo necesario. Está pendiente de sus estudios, alimentación, horarios y actividades.
+      Sin embargo, desde hace algunos meses su hija mayor ha comenzado a mostrarse distante.</p>
+      <div class="dial">
+        — María: “¿Qué te pasa?”<br>
+        — Su hija: “Nada.”<br>
+        — María piensa: “Los adolescentes son así.”
+      </div>
+      <p>Continúa con sus responsabilidades y no insiste.</p>
+      <p>Una tarde, una amiga de su hija le comenta que la joven está atravesando una situación difícil,
+      pero que <span class="b">no quiere hablar con su madre</span> porque siente que cuando intenta conversar con ella,
+      María inmediatamente comienza a darle consejos, corregirla o contarle cómo debería actuar.</p>
+    </div>
+    <div class="qbox" data-step="2">
+      <h4>Preguntas para el grupo</h4>
+      <ul class="clean">
+        <li>¿Cuál es el problema principal?</li>
+        <li>¿María está físicamente presente?</li>
+        <li>¿Está emocionalmente disponible?</li>
+        <li>¿Qué podría estar necesitando la hija?</li>
+        <li>¿Qué debería cambiar María?</li>
+        <li>¿Qué sería más importante inicialmente: <span class="b">aconsejar</span> o <span class="b">escuchar</span>?</li>
+      </ul>
+    </div>
+  </div>
+</div>`},
+
+/* ---------- 36. CASO 2 ---------- */
+{m:"Dialogar", t:"Caso 2 · Nos vemos todos los domingos", c:`
+<div class="wrap tight">
+  <div class="eyebrow" data-step="1">Caso 2</div>
+  <h3 data-step="1" class="gold">“Nos vemos todos los domingos”</h3>
+  <div class="caso mt">
+    <div class="texto" data-step="1">
+      <p>Rosa y Elena sirven juntas en la iglesia desde hace varios años. Se saludan, conversan después del culto
+      y participan en algunas actividades. Rosa sabe que Elena está casada, tiene hijos y trabaja.</p>
+      <p class="mt">Sin embargo, no sabe que desde hace varios meses Elena está experimentando
+      <span class="b">agotamiento emocional y dificultades dentro de su hogar</span>.
+      Un domingo, Elena llega especialmente callada.</p>
+      <div class="dial">
+        — Rosa: “¿Todo bien?”<br>
+        — Elena: “Sí, todo bien.”<br>
+        — Rosa sonríe: “Qué bueno. Nos vemos la próxima semana.”
+      </div>
+    </div>
+    <div class="qbox" data-step="2">
+      <h4>Preguntas para el grupo</h4>
+      <ul class="clean">
+        <li>¿Hubo contacto?</li>
+        <li>¿Hubo verdadera comunicación?</li>
+        <li>¿Qué otra pregunta podría haber hecho Rosa?</li>
+        <li>¿Cómo podría haber mostrado interés <span class="b">sin invadir</span>?</li>
+        <li>¿Qué diferencia existe entre preguntar por cortesía y preguntar porque realmente queremos saber?</li>
+      </ul>
+    </div>
+  </div>
+</div>`},
+
+/* ---------- 37. CASO 3 ---------- */
+{m:"Dialogar", t:"Caso 3 · Ya no somos como antes", c:`
+<div class="wrap tight">
+  <div class="eyebrow" data-step="1">Caso 3</div>
+  <h3 data-step="1" class="gold">“Ya no somos como antes”</h3>
+  <div class="caso mt">
+    <div class="texto" data-step="1">
+      <p>Patricia y su hermana fueron muy cercanas durante muchos años. Compartían decisiones, dificultades,
+      celebraciones y momentos importantes. Con el paso del tiempo comenzaron a surgir pequeños desacuerdos.</p>
+      <p class="mt"><span class="b">Nunca tuvieron una gran discusión</span>, pero dejaron de llamarse con frecuencia.
+      Después dejaron de visitarse. Finalmente, comenzaron a hablar solamente en reuniones familiares.</p>
+      <p class="mt">Ambas sienten que la otra debería dar el primer paso.</p>
+      <div class="dial">
+        Las dos dicen: “Yo no estoy molesta.”<br>
+        Pero ninguna busca realmente acercarse.
+      </div>
+    </div>
+    <div class="qbox" data-step="2">
+      <h4>Preguntas para el grupo</h4>
+      <ul class="clean">
+        <li>¿Existe un conflicto abierto?</li>
+        <li>¿Existe distancia?</li>
+        <li>¿Cómo puede crecer una distancia cuando nadie decide enfrentarla?</li>
+        <li>¿Qué podría impedir que una de ellas dé el primer paso?</li>
+        <li>¿Qué sería un acercamiento saludable?</li>
+      </ul>
+    </div>
+  </div>
+</div>`},
+
+/* ---------- 38. SOCIALIZACIÓN ---------- */
+{m:"Dialogar", t:"Compartamos lo que vimos", c:`
+<div class="wrap tight">
+  <div class="eyebrow" data-step="1">Compartimos en plenaria</div>
+  <h2 data-step="1">Tres preguntas para cada grupo</h2>
+  <div class="grid mt" style="gap:16px">
+    <div class="step-card" data-step="2"><div class="num">1</div>
+      <div class="ph">¿Qué observaron?</div></div>
+    <div class="step-card" data-step="3"><div class="num">2</div>
+      <div class="ph">¿Qué principio del taller aparece en este caso?</div></div>
+    <div class="step-card" data-step="4" style="border-color:rgba(242,183,117,.5);background:rgba(242,183,117,.1)">
+      <div class="num">3</div>
+      <div class="ph">Si ustedes fueran esa persona, ¿qué harían diferente?</div></div>
+  </div>
+  <div class="card mt2 tc" data-step="5">
+    <p class="muted">Recordemos: no buscamos culpables. Buscamos aprender.</p>
+    <p class="lead gold b mt">“¿Qué puedo hacer yo para convertirme en una presencia más significativa?”</p>
+  </div>
+</div>`},
+
+/* ---------- 39. PRACTICAR: portada ---------- */
+{m:"Practicar", t:"Mi mapa de relaciones", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Momento 4 · Practicar</div>
+  <h1 data-step="1" style="font-size:92px">Mi mapa de<br><span class="gold">relaciones</span></h1>
+  <div class="card mt2" data-step="2" style="max-width:1250px;margin-left:auto;margin-right:auto">
+    <p class="lead">En el centro de tu hoja escribe: <span class="gold b">YO</span></p>
+    <p class="lead muted mt">Alrededor encontrarás cuatro niveles.</p>
+  </div>
+  <p class="breath mt2" data-step="3">Toma tu hoja y tu lapicero</p>
+</div>`},
+
+/* ---------- 40. MAPA INTERACTIVO ---------- */
+{m:"Practicar", t:"Los cuatro niveles", c:`
+<div class="wrap tight">
+  <h2 data-step="1" style="margin-bottom:12px">Los cuatro niveles <span class="muted" style="font-size:var(--t-chip)">— toca un nivel o un círculo</span></h2>
+  <div id="mapaWrap" data-step="1">
+    <svg id="mapa" viewBox="0 0 600 600" onclick="">
+      <circle class="ring" data-l="4" cx="300" cy="300" r="282" fill="rgba(168,146,224,.10)" stroke="rgba(168,146,224,.55)" stroke-width="2" onclick="pickLvl(4)"/>
+      <circle class="ring" data-l="3" cx="300" cy="300" r="213" fill="rgba(230,144,155,.12)" stroke="rgba(230,144,155,.55)" stroke-width="2" onclick="pickLvl(3)"/>
+      <circle class="ring" data-l="2" cx="300" cy="300" r="146" fill="rgba(242,183,117,.14)" stroke="rgba(242,183,117,.6)" stroke-width="2" onclick="pickLvl(2)"/>
+      <circle class="ring" data-l="1" cx="300" cy="300" r="82" fill="rgba(118,197,182,.2)" stroke="rgba(118,197,182,.7)" stroke-width="2" onclick="pickLvl(1)"/>
+      <circle cx="300" cy="300" r="34" fill="#F2B775"/>
+      <text x="300" y="309" text-anchor="middle" font-size="24" font-weight="800" fill="#17122b" font-family="Segoe UI,Arial,sans-serif">YO</text>
+      <text x="300" y="232" text-anchor="middle" font-size="19" font-weight="800" fill="#76C5B6" font-family="Segoe UI,Arial,sans-serif">1</text>
+      <text x="300" y="168" text-anchor="middle" font-size="19" font-weight="800" fill="#F2B775" font-family="Segoe UI,Arial,sans-serif">2</text>
+      <text x="300" y="102" text-anchor="middle" font-size="19" font-weight="800" fill="#E6909B" font-family="Segoe UI,Arial,sans-serif">3</text>
+      <text x="300" y="36"  text-anchor="middle" font-size="19" font-weight="800" fill="#A892E0" font-family="Segoe UI,Arial,sans-serif">4</text>
+    </svg>
+    <div class="grid" style="gap:12px">
+      <div class="lvl" data-l="1" onclick="pickLvl(1)">
+        <div class="no teal">1</div>
+        <div><div class="nmm teal">MUY CERCA</div>
+        <div class="ds">Personas con quienes existe una relación significativa, confianza y comunicación.</div></div>
+      </div>
+      <div class="lvl" data-l="2" onclick="pickLvl(2)">
+        <div class="no gold">2</div>
+        <div><div class="nmm gold">CERCA, PERO NECESITO CUIDAR</div>
+        <div class="ds">Personas importantes con quienes existe una buena relación, pero que requieren mayor atención.</div></div>
+      </div>
+      <div class="lvl" data-l="3" onclick="pickLvl(3)">
+        <div class="no rose">3</div>
+        <div><div class="nmm rose">NOS HEMOS DISTANCIADO</div>
+        <div class="ds">Personas con quienes antes existía mayor conexión, pero que hoy se encuentran emocional o comunicacionalmente más lejos.</div></div>
+      </div>
+      <div class="lvl" data-l="4" onclick="pickLvl(4)">
+        <div class="no violet">4</div>
+        <div><div class="nmm violet">NECESITO ACERCARME</div>
+        <div class="ds">Personas que Dios ha colocado cerca de nuestra vida, pero con quienes necesitamos comenzar o recuperar una relación más significativa.</div></div>
+      </div>
+    </div>
+  </div>
+</div>`},
+
+/* ---------- 41. INSTRUCCIONES DEL MAPA ---------- */
+{m:"Practicar", t:"Cómo llenar mi mapa", c:`
+<div class="wrap tight">
+  <h2 data-step="1">Cómo llenar mi mapa</h2>
+  <div class="grid g2 mt">
+    <div class="card teal" data-step="2">
+      <ul class="clean check" style="font-size:var(--t-dense)">
+        <li>No pensemos en todas las personas que conocemos: pensemos en las que <span class="b">realmente tienen significado</span> en nuestra vida.</li>
+        <li>No necesitamos escribir nombres completos. Podemos usar <span class="b">iniciales</span> o una palabra que nos permita identificar a la persona.</li>
+      </ul>
+    </div>
+    <div class="card gold" data-step="3">
+      <ul class="clean" style="font-size:var(--t-dense)">
+        <li>Este ejercicio es <span class="b">personal</span>.</li>
+        <li><span class="b">Nadie</span> tendrá que mostrar su mapa ni explicar públicamente sus relaciones.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card mt2 tc" data-step="4">
+    <p class="lead">Lo importante no es construir un mapa perfecto.</p>
+    <p class="lead gold b mt">Lo importante es permitirnos ver nuestra realidad.</p>
+  </div>
+</div>`},
+
+/* ---------- 42-44. LAS 7 PREGUNTAS ---------- */
+{m:"Practicar", t:"Preguntas para el mapa (1-3)", c:`
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Mientras completas tu mapa</div>
+  <div class="grid mt" style="gap:16px">
+    <div class="step-card" data-step="1"><div class="num">1</div>
+      <div class="ph">¿Quiénes son las personas que actualmente están más cerca de mí?</div></div>
+    <div class="step-card" data-step="2"><div class="num">2</div>
+      <div class="ph">¿Con quién tengo buena relación, pero podría estar más presente?</div></div>
+    <div class="step-card" data-step="3"><div class="num">3</div>
+      <div class="ph">¿Con quién me he distanciado durante los últimos años o meses?</div></div>
+  </div>
+</div>`},
+
+{m:"Practicar", t:"Preguntas para el mapa (4-5)", c:`
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Mientras completas tu mapa</div>
+  <div class="grid mt" style="gap:16px">
+    <div class="step-card" data-step="1"><div class="num">4</div>
+      <div class="ph">¿A quién veo frecuentemente, pero realmente no conozco cómo está?</div></div>
+    <div class="step-card" data-step="2"><div class="num">5</div>
+      <div class="ph">¿Hay alguien que necesita ser escuchado por mí?</div></div>
+  </div>
+</div>`},
+
+{m:"Practicar", t:"Preguntas para el mapa (6-7)", c:`
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Mientras completas tu mapa</div>
+  <div class="grid mt" style="gap:16px">
+    <div class="step-card" data-step="1"><div class="num">6</div>
+      <div class="ph">¿Hay alguien a quien necesito acompañar?</div></div>
+    <div class="step-card" data-step="2" style="border-color:rgba(230,144,155,.5);background:rgba(230,144,155,.1)">
+      <div class="num">7</div>
+      <div class="ph">¿Existe una relación que he dejado enfriar porque esperaba que la otra persona diera el primer paso?</div></div>
+  </div>
+</div>`},
+
+/* ---------- 45. DIAGNÓSTICO C/P/A ---------- */
+{m:"Practicar", t:"Diagnóstico · C, P, A", c:`
+<div class="wrap tight">
+  <div class="eyebrow" data-step="1">Segunda parte del ejercicio</div>
+  <h2 data-step="1">Escoge <span class="gold">tres personas</span> y coloca una letra junto a cada una</h2>
+  <div class="grid g3 mt">
+    <div class="card teal" data-step="2">
+      <div class="big-stat teal tc">C</div>
+      <p class="tc b mt">Comunicación</p>
+      <p class="tc muted mt" style="font-size:var(--t-dense)">Necesito conversar mejor con esta persona.</p>
+    </div>
+    <div class="card gold" data-step="3">
+      <div class="big-stat gold tc">P</div>
+      <p class="tc b mt">Presencia</p>
+      <p class="tc muted mt" style="font-size:var(--t-dense)">Necesito estar más disponible para esta persona.</p>
+    </div>
+    <div class="card violet" data-step="4">
+      <div class="big-stat violet tc">A</div>
+      <p class="tc b mt">Acompañamiento</p>
+      <p class="tc muted mt" style="font-size:var(--t-dense)">Necesito caminar más intencionalmente junto a esta persona.</p>
+    </div>
+  </div>
+  <div class="card mt2" data-step="5">
+    <p class="muted" style="font-size:var(--t-chip);letter-spacing:.14em;text-transform:uppercase">Por ejemplo</p>
+    <p class="lead mt">Persona A — C &nbsp;·&nbsp; Persona B — P &nbsp;·&nbsp; Persona C — A</p>
+  </div>
+</div>`},
+
+/* ---------- 46. APLICAR: portada ---------- */
+{m:"Aplicar", t:"Una persona, un paso", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Momento 5 · Aplicar</div>
+  <h1 data-step="1" style="font-size:94px">Una persona,<br><span class="gold">un paso</span></h1>
+  <div class="card rose mt2" data-step="2" style="max-width:1250px;margin-left:auto;margin-right:auto">
+    <p class="say" style="font-size:40px;line-height:1.32">
+      No quiero que salgan de aquí pensando: ‘Tengo que mejorar todas mis relaciones’.
+      Hoy vamos a comenzar con <span class="b">una sola</span>.”</p>
+  </div>
+  <p class="lead gold b mt2" data-step="3">No necesitamos resolver toda una historia esta noche.<br>Necesitamos dar un primer paso.</p>
+</div>`},
+
+/* ---------- 47. MI PRIMER PASO ---------- */
+{m:"Aplicar", t:"Mi primer paso", c:`
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Completa en tu hoja</div>
+  <h2 data-step="1" class="gold">MI PRIMER PASO</h2>
+  <div class="card mt" data-step="2">
+    <div class="field"><span class="lb">1. La persona a la que quiero acercarme:</span><span class="ln"></span></div>
+    <div class="field"><span class="lb">2. Lo que creo que necesita de mí:</span><span class="ln"></span></div>
+    <div class="field"><span class="lb">3. Lo que necesito mejorar en mi manera de relacionarme con ella:</span><span class="ln"></span></div>
+    <div class="field"><span class="lb">4. Mi primer paso será:</span><span class="ln"></span></div>
+    <div class="field" style="border-bottom:0"><span class="lb">5. ¿Cuándo lo haré?</span><span class="ln"></span></div>
+  </div>
+</div>`},
+
+/* ---------- 48. COMPROMISO ---------- */
+{m:"Cierre", t:"Frase de compromiso", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Momento 6 · Compromiso</div>
+  <h2 data-step="1">Completa esta frase</h2>
+  <div class="card gold mt" data-step="2" style="max-width:1300px;margin-left:auto;margin-right:auto">
+    <p style="font-size:48px;line-height:1.3">
+      “Esta semana quiero ser más intencional con <span class="muted">_______________</span>”</p>
+  </div>
+  <p class="breath mt2" data-step="3">y después</p>
+  <div class="card teal mt2" data-step="3" style="max-width:1300px;margin-left:auto;margin-right:auto">
+    <p style="font-size:48px;line-height:1.3">
+      “El primer paso que voy a dar será <span class="muted">_______________</span>”</p>
+  </div>
+  <p class="muted mt2" data-step="4" style="font-size:var(--t-dense)">
+    Si alguna desea compartir, compartimos solamente <span class="b">el aprendizaje</span>, no la situación personal.</p>
+</div>`},
+
+/* ---------- 49-51. REFLEXIÓN FINAL ---------- */
+{m:"Cierre", t:"Reflexión final (1)", c:`
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Reflexión final</div>
+  <p class="say" data-step="1" style="font-size:42px;line-height:1.36">
+    Durante mucho tiempo podemos pensar que amar a las personas significa simplemente estar ahí para ellas.
+    Pero hoy hemos descubierto que <span class="b gold">la presencia física, por sí sola, no siempre comunica amor</span>.</p>
+  <div class="grid g3 mt2">
+    <div class="card" data-step="2"><p style="font-size:var(--t-dense)">Podemos estar en una misma casa y vivir distantes.</p></div>
+    <div class="card" data-step="3"><p style="font-size:var(--t-dense)">Podemos sentarnos en la misma iglesia y desconocer las luchas de quien está a nuestro lado.</p></div>
+    <div class="card" data-step="4"><p style="font-size:var(--t-dense)">Podemos preguntar “¿cómo estás?” y continuar caminando sin esperar la respuesta.</p></div>
+  </div>
+  <p class="lead tc mt2 gold b" data-step="5">Pero Dios nos llama a una presencia diferente.</p>
+</div>`},
+
+{m:"Cierre", t:"Reflexión final (2)", c:`
+<div class="wrap">
+  <div class="card mt" data-step="1">
+    <p class="lead">Deuteronomio 6 nos presenta una fe que se transmite <span class="b gold">dentro de la vida cotidiana</span>:
+    no solamente en momentos extraordinarios, sino en la casa, en el camino, al acostarse y al levantarse.</p>
+    <div class="divider"></div>
+    <p class="lead b">Eso significa que nuestras relaciones también son espacios donde podemos
+    manifestar el carácter de Cristo.</p>
+  </div>
+  <div class="grid g3 mt2">
+    <div class="card rose" data-step="2"><p style="font-size:var(--t-dense)">Quizá hoy descubriste que alguien está más lejos de ti de lo que pensabas.</p></div>
+    <div class="card rose" data-step="3"><p style="font-size:var(--t-dense)">Quizá descubriste que has estado físicamente cerca, pero emocionalmente ausente.</p></div>
+    <div class="card rose" data-step="4"><p style="font-size:var(--t-dense)">Quizá recordaste una relación que necesita atención.</p></div>
+  </div>
+</div>`},
+
+{m:"Cierre", t:"De la culpa al propósito", c:`
+<div class="wrap tc">
+  <h1 data-step="1" style="font-size:66px;line-height:1.12">
+    No permitas que ese descubrimiento se convierta solamente en <span class="rose">culpa</span>.</h1>
+  <h1 data-step="2" class="mt2" style="font-size:76px;line-height:1.1">
+    Permite que se convierta en <span class="gold">propósito</span>.</h1>
+  <div class="card gold mt2" data-step="3" style="max-width:1350px;margin-left:auto;margin-right:auto">
+    <p class="lead">Porque reconocer una distancia no significa que la historia terminó.</p>
+    <p class="lead b mt">A veces significa que finalmente descubrimos dónde necesitamos
+    <span class="u">comenzar a construir un puente</span>.</p>
+  </div>
+</div>`},
+
+/* ---------- 52. LAS CUATRO AFIRMACIONES ---------- */
+{m:"Cierre", t:"Lo que me llevo del Día 1", c:`
+<div class="wrap">
+  <h2 data-step="1">Lo que me llevo del Día 1</h2>
+  <div class="grid g2 mt">
+    <div class="card teal" data-step="2"><div class="row c"><div class="num">1</div>
+      <p class="b">Estar cerca físicamente no significa estar conectado emocionalmente.</p></div></div>
+    <div class="card gold" data-step="3"><div class="row c"><div class="num">2</div>
+      <p class="b">La presencia significativa requiere intencionalidad.</p></div></div>
+    <div class="card violet" data-step="4"><div class="row c"><div class="num">3</div>
+      <p class="b">Escuchar y acompañar también son formas de amar.</p></div></div>
+    <div class="card rose" data-step="5"><div class="row c"><div class="num">4</div>
+      <p class="b">Reconocer una distancia es el primer paso para comenzar a construir un puente.</p></div></div>
+  </div>
+</div>`},
+
+/* ---------- 53. RESULTADO ESPERADO ---------- */
+{m:"Cierre", t:"Con qué termino esta noche", c:`
+<div class="wrap tight">
+  <h2 data-step="1">Con qué termino esta noche</h2>
+  <div class="grid mt" style="gap:13px">
+    <div class="step-card" data-step="2"><div class="num">👁️</div><div>
+      <div class="tag">Una nueva comprensión</div><div class="ph">“Cercanía física no es igual a conexión.”</div></div></div>
+    <div class="step-card" data-step="3"><div class="num">🔍</div><div>
+      <div class="tag">Una nueva mirada</div><div class="ph">“Hay relaciones que necesitan mi atención.”</div></div></div>
+    <div class="step-card" data-step="4"><div class="num">🗺️</div><div>
+      <div class="tag">Una herramienta</div><div class="ph">“Tengo mi mapa de relaciones.”</div></div></div>
+    <div class="step-card" data-step="5"><div class="num">🙋‍♀️</div><div>
+      <div class="tag">Una persona identificada</div><div class="ph">“Sé con quién necesito comenzar.”</div></div></div>
+    <div class="step-card" data-step="6" style="border-color:rgba(242,183,117,.55);background:rgba(242,183,117,.11)"><div class="num">👣</div><div>
+      <div class="tag">Un primer paso</div><div class="ph">“Sé qué puedo hacer después de este taller.”</div></div></div>
+  </div>
+</div>`},
+
+/* ---------- 54. ORACIÓN ---------- */
+{m:"Cierre", t:"Oración final", c:`
+<div class="wrap tc">
+  <div class="eyebrow" data-step="1">Oremos</div>
+  <h1 data-step="1" style="font-size:80px">Oración <span class="gold">final</span></h1>
+  <div class="card mt2" data-step="2" style="max-width:1250px;margin-left:auto;margin-right:auto">
+    <p class="lead">Ponemos delante de ti a <span class="b gold">esa persona</span>
+    que cada una de nosotras ha identificado esta noche.</p>
+  </div>
+  <div class="grid g4 mt2" data-step="3" style="max-width:1300px;margin-left:auto;margin-right:auto">
+    <div class="card teal tc"><p class="b">Sensibilidad<br>para ver</p></div>
+    <div class="card gold tc"><p class="b">Sabiduría<br>para escuchar</p></div>
+    <div class="card violet tc"><p class="b">Humildad<br>para reconocer</p></div>
+    <div class="card rose tc"><p class="b">Amor<br>para acompañar</p></div>
+  </div>
+  <p class="breath mt2" data-step="4">En el nombre de Jesús · Amén</p>
+</div>`},
+
+/* ---------- 55. TRANSICIÓN AL DÍA 2 ---------- */
+{m:"Cierre", t:"Mañana · Día 2", c:`
+<div class="wrap">
+  <div class="eyebrow" data-step="1">Nos vemos mañana</div>
+  <div class="vs mt">
+    <div class="card" data-step="1">
+      <span class="pill c">Hoy</span>
+      <h3 class="mt">Aprendimos a <span class="gold">mirar</span></h3>
+      <p class="muted" style="font-size:var(--t-dense)">Miramos nuestras relaciones, reconocimos distancias
+      y descubrimos personas a las que necesitamos acercarnos.</p>
+      <div class="divider"></div>
+      <p class="b">Identificamos <span class="rose">dónde</span> está la distancia.</p>
+    </div>
+    <div class="mid" data-step="2">→</div>
+    <div class="card teal" data-step="2">
+      <span class="pill b">Mañana</span>
+      <h3 class="mt">¿Cómo puedo <span class="teal">acercarme</span> correctamente?</h3>
+      <p class="muted" style="font-size:var(--t-dense)">Aprenderemos a escuchar, comunicarnos y acompañar
+      de una manera que realmente construya puentes.</p>
+      <div class="divider"></div>
+      <p class="b">Aprenderemos <span class="teal">cómo</span> comenzar a reducirla.</p>
+    </div>
+  </div>
+  <p class="lead tc mt2 gold b" data-step="3">Querer acercarnos es importante. También necesitamos aprender cómo.</p>
+</div>`},
+
+/* ---------- 56. CIERRE ---------- */
+{m:"Cierre", t:"Cierre", c:`
+<div class="wrap tc">
+  <div data-step="1">
+    <svg viewBox="0 0 760 140" style="width:min(760px,88%);height:auto">
+      <line x1="40" y1="92" x2="300" y2="92" stroke="rgba(247,241,232,.28)" stroke-width="3"/>
+      <line x1="460" y1="92" x2="720" y2="92" stroke="rgba(247,241,232,.28)" stroke-width="3"/>
+      <path d="M300 92 Q380 18 460 92" fill="none" stroke="#F2B775" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="300" cy="92" r="14" fill="#76C5B6"/>
+      <circle cx="460" cy="92" r="14" fill="#E6909B"/>
+    </svg>
+  </div>
+  <h1 class="mt2" data-step="2" style="font-size:78px;line-height:1.08">
+    Hoy reconocimos la distancia.<br><span class="gold">Mañana construimos el puente.</span></h1>
+  <div class="meta mt2" data-step="3"><span>Taller “Cerca y a la vez lejos”</span><span>Día 1</span></div>
+</div>`}
+];
+
+/* ============================================================
+   MOTOR DE LA PRESENTACIÓN
+   ============================================================ */
+var deck = document.getElementById('deck');
+var cur = 0, step = 0, maxStep = [];
+
+function build(){
+  var html = '';
+  for (var i=0;i<SLIDES.length;i++){
+    html += '<section class="slide" id="s'+i+'">'+SLIDES[i].c+'</section>';
+  }
+  deck.innerHTML = html;
+  for (var j=0;j<SLIDES.length;j++){
+    var nodes = document.getElementById('s'+j).querySelectorAll('[data-step]');
+    var mx = 0;
+    for (var k=0;k<nodes.length;k++){
+      var v = parseInt(nodes[k].getAttribute('data-step'),10) || 0;
+      if (v>mx) mx = v;
+    }
+    maxStep[j] = mx;
+  }
+  buildMenu();
+  show(0,0);
+}
+
+function show(i, s){
+  if (i<0) i=0;
+  if (i>SLIDES.length-1) i=SLIDES.length-1;
+  var old = document.getElementById('s'+cur);
+  if (old) old.classList.remove('active');
+  cur = i;
+  step = (typeof s === 'number') ? s : 0;
+  var el = document.getElementById('s'+cur);
+  el.classList.add('active');
+  paint();
+  document.getElementById('chip-mom').textContent = SLIDES[cur].m;
+  document.getElementById('counter').textContent = (cur+1)+' / '+SLIDES.length;
+  document.getElementById('bar').style.width = ((cur+1)/SLIDES.length*100)+'%';
+}
+
+function paint(){
+  var nodes = document.getElementById('s'+cur).querySelectorAll('[data-step]');
+  for (var i=0;i<nodes.length;i++){
+    var v = parseInt(nodes[i].getAttribute('data-step'),10) || 0;
+    if (v<=step) nodes[i].classList.add('on'); else nodes[i].classList.remove('on');
+  }
+}
+
+function next(){
+  if (step < maxStep[cur]) { step++; paint(); }
+  else if (cur < SLIDES.length-1) { show(cur+1, 0); }
+}
+function prev(){
+  if (step > 0) { step--; paint(); }
+  else if (cur > 0) { show(cur-1, maxStep[cur-1]); }
+}
+function nextSlide(){ if (cur < SLIDES.length-1) show(cur+1, maxStep[cur+1]); }
+function prevSlide(){ if (cur > 0) show(cur-1, maxStep[cur-1]); }
+function go(i){ closeOv(); show(i, maxStep[i]); }
+
+/* ---------- índice ---------- */
+function buildMenu(){
+  var h = '';
+  for (var i=0;i<SLIDES.length;i++){
+    h += '<div class="mi" onclick="go('+i+')"><span class="n">'+(i+1)+'</span>'+
+         '<span>'+SLIDES[i].t+'</span><span class="s">'+SLIDES[i].m+'</span></div>';
+  }
+  document.getElementById('menuList').innerHTML = h;
+}
+function toggleMenu(){
+  var m = document.getElementById('menu');
+  document.getElementById('help').classList.remove('show');
+  m.classList.toggle('show');
+}
+function toggleHelp(){
+  var h = document.getElementById('help');
+  document.getElementById('menu').classList.remove('show');
+  h.classList.toggle('show');
+}
+function closeOv(){
+  document.getElementById('menu').classList.remove('show');
+  document.getElementById('help').classList.remove('show');
+}
+
+/* ---------- interacciones de diapositiva ---------- */
+function flip(el){ el.classList.toggle('open'); }
+
+function tally(el){
+  var v = el.querySelector('.val');
+  v.textContent = (parseInt(v.textContent,10)||0) + 1;
+}
+
+function pickLvl(n){
+  var ls = document.querySelectorAll('.lvl');
+  for (var i=0;i<ls.length;i++){
+    if (ls[i].getAttribute('data-l') === String(n)) ls[i].classList.add('sel');
+    else ls[i].classList.remove('sel');
+  }
+  var rs = document.querySelectorAll('#mapa .ring');
+  for (var j=0;j<rs.length;j++){
+    rs[j].style.opacity = (rs[j].getAttribute('data-l') === String(n)) ? '1' : '.32';
+    rs[j].style.strokeWidth = (rs[j].getAttribute('data-l') === String(n)) ? '5' : '2';
+  }
+}
+
+/* ---------- pantalla atenuada (silencio) ---------- */
+var dimmed = false;
+function toggleDim(){
+  dimmed = !dimmed;
+  document.getElementById('deck').style.opacity = dimmed ? '.16' : '1';
+  document.getElementById('deck').style.transition = 'opacity .9s ease';
+  document.getElementById('aura').style.opacity = dimmed ? '.4' : '1';
+}
+
+/* ---------- temporizador (setInterval, sin keyframes) ---------- */
+var tTotal = 420, tLeft = 420, tInt = null;
+function fmt(s){
+  var m = Math.floor(s/60), r = s%60;
+  return (m<10?'0':'')+m+':'+(r<10?'0':'')+r;
+}
+function renderT(){
+  var d = document.getElementById('tdisplay');
+  d.textContent = fmt(tLeft);
+  d.className = tLeft === 0 ? 'done' : (tLeft <= 30 ? 'warn' : '');
+}
+function setT(s){ pauseT(); tTotal = s; tLeft = s; renderT(); showTimer(); }
+function startT(){
+  if (tInt) return;
+  showTimer();
+  tInt = setInterval(function(){
+    if (tLeft > 0){ tLeft--; renderT(); }
+    else { clearInterval(tInt); tInt = null; blinkDone(); }
+  }, 1000);
+}
+function pauseT(){ if (tInt){ clearInterval(tInt); tInt = null; } }
+function resetT(){ pauseT(); tLeft = tTotal; renderT(); }
+function showTimer(){ document.getElementById('timer').classList.add('show'); }
+function toggleTimer(){ document.getElementById('timer').classList.toggle('show'); }
+function blinkDone(){
+  var d = document.getElementById('tdisplay'), n = 0;
+  var b = setInterval(function(){
+    d.style.opacity = (n % 2 === 0) ? '.25' : '1';
+    n++;
+    if (n > 11){ clearInterval(b); d.style.opacity = '1'; }
+  }, 420);
+}
+
+/* ---------- teclado ---------- */
+document.addEventListener('keydown', function(e){
+  var k = e.key;
+  if (k === 'Escape'){ closeOv(); return; }
+  if (k === 'ArrowRight' || k === ' ' || k === 'PageDown'){ e.preventDefault(); next(); }
+  else if (k === 'ArrowLeft' || k === 'PageUp'){ e.preventDefault(); prev(); }
+  else if (k === 'ArrowDown'){ e.preventDefault(); nextSlide(); }
+  else if (k === 'ArrowUp'){ e.preventDefault(); prevSlide(); }
+  else if (k === 'Home'){ show(0,0); }
+  else if (k === 'End'){ show(SLIDES.length-1, maxStep[SLIDES.length-1]); }
+  else if (k === 'm' || k === 'M'){ toggleMenu(); }
+  else if (k === 't' || k === 'T'){ toggleTimer(); }
+  else if (k === 'n' || k === 'N'){ toggleDim(); }
+  else if (k === '?'){ toggleHelp(); }
+  else if (k === 'f' || k === 'F'){
+    if (!document.fullscreenElement){ if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); }
+    else if (document.exitFullscreen){ document.exitFullscreen(); }
+  }
+});
+
+/* ---------- táctil ---------- */
+var tx = 0, ty = 0;
+document.addEventListener('touchstart', function(e){
+  tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+}, {passive:true});
+document.addEventListener('touchend', function(e){
+  var dx = e.changedTouches[0].clientX - tx;
+  var dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy)){ if (dx < 0) next(); else prev(); }
+}, {passive:true});
+
+/* ---------- ajuste del lienzo a la pantalla ---------- */
+function fit(){
+  var s = Math.min(window.innerWidth/1600, window.innerHeight/900);
+  document.getElementById('stage').style.transform =
+    'translate(-50%,-50%) scale(' + s + ')';
+}
+window.addEventListener('resize', fit);
+fit();
+
+/* ---------- respiración suave del fondo (sin keyframes) ---------- */
+setInterval(function(){
+  var a = document.getElementById('aura');
+  if (!dimmed) a.style.opacity = (a.style.opacity === '0.88') ? '1' : '0.88';
+}, 4200);
+
+build();
+renderT();
+</script>
+
+
+</body></html>

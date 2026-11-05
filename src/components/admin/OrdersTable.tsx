@@ -7,7 +7,7 @@ export default function OrdersTable({ tickets }: { tickets: Ticket[] }) {
     return (
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs">
             <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-slate-200">
+                <table className="min-w-[900px] w-full divide-y divide-slate-200">
                     <thead className="bg-slate-50">
                         <tr>
                             <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Asistente</th>

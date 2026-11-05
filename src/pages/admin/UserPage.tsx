@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabaseClient'
-import { FaPlus, FaTrash, FaSpinner, FaUserShield, FaUser } from 'react-icons/fa'
+import { FaPlus, FaTrash, FaSpinner, FaUserShield, FaUser, FaEdit } from 'react-icons/fa'
 
 interface AdminUser {
     id: string
@@ -136,13 +137,22 @@ export default function UserPage() {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <button
-                                            onClick={() => handleDeleteUser(user.id)}
-                                            className="text-red-500 hover:text-red-700 p-2"
-                                            title="Eliminar acceso"
-                                        >
-                                            <FaTrash />
-                                        </button>
+                                        <div className="flex justify-end gap-2">
+                                            <Link
+                                                to={`/admin/users/${user.id}`}
+                                                className="text-blue-500 hover:text-blue-700 p-2"
+                                                title="Editar información"
+                                            >
+                                                <FaEdit />
+                                            </Link>
+                                            <button
+                                                onClick={() => handleDeleteUser(user.id)}
+                                                className="text-red-500 hover:text-red-700 p-2"
+                                                title="Eliminar acceso"
+                                            >
+                                                <FaTrash />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

@@ -48,8 +48,8 @@ export async function generateTicketPdf(ticket: Ticket): Promise<Uint8Array> {
     
     const w1 = ticket.workshop_day1 || "Taller Día 1 Pendiente";
     const w2 = ticket.workshop_day2 || "Taller Día 2 Pendiente";
-    page.drawText(`• ${w1}`, { x: 50, y: height - 195, size: 12, font: fontItalic, color: black });
-    page.drawText(`• ${w2}`, { x: 50, y: height - 215, size: 12, font: fontItalic, color: black });
+    page.drawText(`• Día 1: ${w1}`, { x: 50, y: height - 195, size: 12, font: fontItalic, color: black });
+    page.drawText(`• Día 2: ${w2}`, { x: 50, y: height - 215, size: 12, font: fontItalic, color: black });
 
     // Disclaimer
     const disclaimer = "Este es tu ticket de entrada al evento. Debes presentar este ticket (impreso o digital) al momento de ingresar. Puedes encontrar mas detalles del evento en nuestra pagina web. ¡Te esperamos!";

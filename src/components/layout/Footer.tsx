@@ -37,6 +37,13 @@ const Footer = () => {
                         className="text-brand-100 text-sm font-medium transition-colors hover:text-white hover:underline underline-offset-4">
                         Panel de Administración
                     </Link>
+                    <span className="hidden sm:inline text-brand-300 text-xs">|</span>
+                    <p className="text-brand-200/60 text-sm">
+                        Desarrollado por:{' '}
+                        <a href="https://boostwebperu.com" target="_blank" rel="noopener noreferrer" className="hover:text-brand-100 transition-colors">
+                            BoostWeb Perú
+                        </a>
+                    </p>
                 </div>
             </div>
         </footer>

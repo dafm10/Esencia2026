@@ -12,6 +12,7 @@ import AttendancePage from "../pages/admin/AttendancePage"
 import ReportsPage from "../pages/admin/ReportsPage"
 import BulkRegisterPage from "../pages/admin/BulkRegisterPage"
 import UserPage from "../pages/admin/UserPage"
+import UserDetail from "../pages/admin/UserDetail"
 
 const AppRouter = () => {
     return (
@@ -31,6 +32,7 @@ const AppRouter = () => {
                         <Route path="/admin/attendance" element={<AttendancePage />} />
                         <Route path="/admin/reports" element={<ReportsPage />} />
                         <Route path="/admin/users" element={<UserPage />} />
+                        <Route path="/admin/users/:id" element={<UserDetail />} />
                     </Route>
                 </Route>
 

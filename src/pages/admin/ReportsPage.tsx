@@ -21,36 +21,41 @@ const ReportsPage = () => {
                 .from('tickets')
                 .select('*')
                 .order('created_at', { ascending: false })
-            
+
             if (data) setTickets(data as Ticket[])
             setLoading(false)
         }
         fetchTickets()
     }, [])
 
+    const normalize = (v?: string | null) => (v ?? '').trim().replace(/\s+/g, ' ').toLowerCase();
+    // Los talleres inician con "N.-"; sirve para empatar nombres guardados con versiones anteriores
+    const workshopNumber = (v?: string | null) => (v ?? '').trim().match(/^(\d+)\s*\.?\s*-/)?.[1];
+
     const filteredTickets = tickets.filter(t => {
         const term = searchTerm.toLowerCase();
-        const matchesSearch = t.full_name.toLowerCase().includes(term) || t.dni.includes(term);
-        
+        const matchesSearch = t.full_name.toLowerCase().includes(term) || t.dni.includes(term) || (t.voucher_code && t.voucher_code.toLowerCase().includes(term));
+
+        const w = selectedWorkshop ? workshops.find(wk => wk.id === selectedWorkshop) : undefined;
+        if (selectedWorkshop && !w) return false;
+
+        const matchesDay = (value: string | undefined, dayName?: string) => {
+            if (!w) return !!value;
+            const v = normalize(value);
+            if (!v) return false;
+            if ([w.id, w.name, dayName].some(c => c && normalize(c) === v)) return true;
+            const num = workshopNumber(value);
+            return !!num && num === w.id.replace('taller-', '');
+        };
+
+        const m1 = matchesDay(t.workshop_day1, w?.nameDay1);
+        const m2 = matchesDay(t.workshop_day2, w?.nameDay2);
+
         let matchesWorkshop = true;
-        if (selectedWorkshop) {
-            const w = workshops.find(wk => wk.id === selectedWorkshop);
-            if (w) {
-                const w1 = w.nameDay1 || w.name;
-                const w2 = w.nameDay2 || w.name;
-                if (filterDay1 && filterDay2) {
-                    matchesWorkshop = t.workshop_day1 === w1 || t.workshop_day2 === w2;
-                } else if (filterDay1) {
-                    matchesWorkshop = t.workshop_day1 === w1;
-                } else if (filterDay2) {
-                    matchesWorkshop = t.workshop_day2 === w2;
-                } else {
-                    matchesWorkshop = t.workshop_day1 === w1 || t.workshop_day2 === w2;
-                }
-            } else {
-                matchesWorkshop = false;
-            }
-        }
+        if (filterDay1 && filterDay2) matchesWorkshop = m1 || m2;
+        else if (filterDay1) matchesWorkshop = m1;
+        else if (filterDay2) matchesWorkshop = m2;
+        else if (w) matchesWorkshop = m1 || m2;
 
         return matchesSearch && matchesWorkshop;
     })
@@ -71,6 +76,7 @@ const ReportsPage = () => {
             { header: 'Cargo en Iglesia', key: 'church_role', width: 15 },
             { header: 'Área', key: 'area', width: 15 },
             { header: 'Distrito', key: 'district', width: 15 },
+            { header: 'N° Operación', key: 'voucher_code', width: 20 },
             { header: 'Taller Día 1', key: 'workshop_day1', width: 30 },
             { header: 'Taller Día 2', key: 'workshop_day2', width: 30 },
             { header: 'Estado', key: 'status', width: 12 },
@@ -93,6 +99,7 @@ const ReportsPage = () => {
                 church_role: t.church_role,
                 area: t.area,
                 district: t.district,
+                voucher_code: t.voucher_code || '-',
                 workshop_day1: t.workshop_day1 || 'Pendiente',
                 workshop_day2: t.workshop_day2 || 'Pendiente',
                 status: t.status === 'approved' ? 'Aprobado' : t.status === 'rejected' ? 'Rechazado' : 'Pendiente',
@@ -118,13 +125,13 @@ const ReportsPage = () => {
             <div className="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
                 <div className="p-6 border-b border-slate-100 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
                     <h3 className="text-lg font-bold text-slate-800">Listado de Asistentes ({filteredTickets.length})</h3>
-                    
+
                     <div className="flex flex-col md:flex-row items-center gap-4">
                         <div className="relative w-full md:w-auto">
                             <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                            <input 
-                                type="text" 
-                                placeholder="Buscar por nombre o DNI..." 
+                            <input
+                                type="text"
+                                placeholder="Buscar por nombre, DNI o N° Operación..."
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
                                 className="w-full md:w-64 pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition-all"
@@ -132,7 +139,7 @@ const ReportsPage = () => {
                         </div>
 
                         <div className="flex items-center gap-3 w-full md:w-auto">
-                            <select 
+                            <select
                                 value={selectedWorkshop}
                                 onChange={e => setSelectedWorkshop(e.target.value)}
                                 className="w-full md:w-64 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition-all text-slate-700"
@@ -144,18 +151,18 @@ const ReportsPage = () => {
                             </select>
 
                             <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-                                <input 
-                                    type="checkbox" 
+                                <input
+                                    type="checkbox"
                                     checked={filterDay1}
                                     onChange={e => setFilterDay1(e.target.checked)}
                                     className="rounded border-slate-300 text-brand-500 focus:ring-brand-500"
                                 />
                                 Día 1
                             </label>
-                            
+
                             <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-                                <input 
-                                    type="checkbox" 
+                                <input
+                                    type="checkbox"
                                     checked={filterDay2}
                                     onChange={e => setFilterDay2(e.target.checked)}
                                     className="rounded border-slate-300 text-brand-500 focus:ring-brand-500"
@@ -178,28 +185,30 @@ const ReportsPage = () => {
                     <table className="w-full text-left text-sm text-slate-600">
                         <thead className="bg-slate-50 text-slate-500 uppercase text-xs font-semibold">
                             <tr>
-                                <th className="px-6 py-4">Nombre Completo</th>
-                                <th className="px-6 py-4">DNI</th>
-                                <th className="px-6 py-4">Área</th>
-                                <th className="px-6 py-4">Iglesia</th>
-                                <th className="px-6 py-4">Taller Día 1</th>
-                                <th className="px-6 py-4">Taller Día 2</th>
+                                <th className="px-6 py-4 whitespace-nowrap">Nombre Completo</th>
+                                <th className="px-6 py-4 whitespace-nowrap">DNI</th>
+                                <th className="px-6 py-4 whitespace-nowrap">Área</th>
+                                <th className="px-6 py-4 whitespace-nowrap">Iglesia</th>
+                                <th className="px-6 py-4 whitespace-nowrap">N° Operación</th>
+                                <th className="px-6 py-4 whitespace-nowrap">Taller Día 1</th>
+                                <th className="px-6 py-4 whitespace-nowrap">Taller Día 2</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                             {filteredTickets.map(ticket => (
                                 <tr key={ticket.id} className="hover:bg-slate-50 transition-colors">
-                                    <td className="px-6 py-4 font-medium text-slate-900">{ticket.full_name}</td>
-                                    <td className="px-6 py-4">{ticket.dni}</td>
-                                    <td className="px-6 py-4">{ticket.area}</td>
-                                    <td className="px-6 py-4 text-slate-700">{ticket.church}</td>
-                                    <td className="px-6 py-4 text-slate-700 text-sm">{ticket.workshop_day1 || '-'}</td>
-                                    <td className="px-6 py-4 text-slate-700 text-sm">{ticket.workshop_day2 || '-'}</td>
+                                    <td className="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">{ticket.full_name}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap">{ticket.dni}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap">{ticket.area}</td>
+                                    <td className="px-6 py-4 text-slate-700 whitespace-nowrap">{ticket.church}</td>
+                                    <td className="px-6 py-4 text-slate-700 whitespace-nowrap font-mono">{ticket.voucher_code || '-'}</td>
+                                    <td className="px-6 py-4 text-slate-700 text-sm whitespace-nowrap">{ticket.workshop_day1 || '-'}</td>
+                                    <td className="px-6 py-4 text-slate-700 text-sm whitespace-nowrap">{ticket.workshop_day2 || '-'}</td>
                                 </tr>
                             ))}
                             {filteredTickets.length === 0 && (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-8 text-center text-slate-500">
+                                    <td colSpan={7} className="px-6 py-8 text-center text-slate-500">
                                         No se encontraron asistentes.
                                     </td>
                                 </tr>

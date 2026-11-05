@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { FaBars, FaTimes, FaWpforms } from 'react-icons/fa'
+import { FaBars, FaTimes } from 'react-icons/fa'
 import { navLinks } from "../../data/content"
 
 const Header = () => {
@@ -34,11 +34,11 @@ const Header = () => {
                         ))}
                     </div>
 
-                    <div className="hidden items-center gap-4 lg:flex">
+                    {/* <div className="hidden items-center gap-4 lg:flex">
                         <a href="#registro" className="flex gap-2 items-center rounded-full bg-brand-800 px-6 py-2.5 text-sm font-bold text-brand-50 shadow-sm transition-colors hover:bg-brand-600">
                             <FaWpforms /> Registro
                         </a>
-                    </div>
+                    </div> */}
 
                     <button
                         onClick={() => setMenuOpen(!menuOpen)}
@@ -56,9 +56,9 @@ const Header = () => {
                             </a>
                         ))}
 
-                        <a href="#registro" onClick={() => setMenuOpen(false)} className="mt-2 flex items-center justify-center gap-2 rounded-md bg-brand-800 px-6 py-3 text-center text-sm font-bold text-brand-50 hover:bg-[#f3a6b8]">
+                        {/* <a href="#registro" onClick={() => setMenuOpen(false)} className="mt-2 flex items-center justify-center gap-2 rounded-md bg-brand-800 px-6 py-3 text-center text-sm font-bold text-brand-50 hover:bg-[#f3a6b8]">
                             <FaWpforms /> Registro
-                        </a>
+                        </a> */}
                     </div>
                 )}
             </nav>

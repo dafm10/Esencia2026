@@ -51,6 +51,15 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "Faltan campos requeridos" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // Validar si el DNI ya fue registrado
+    const { count: dniCount } = await supabaseAdmin.from("tickets")
+      .select("*", { count: "exact", head: true })
+      .eq("dni", dni);
+
+    if (dniCount !== null && dniCount > 0) {
+      return new Response(JSON.stringify({ error: "Este DNI ya se encuentra registrado en el evento." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // Validate capacities
     const unlimitedWorkshops = [
         "6.- Molde modelo y ejemplo / Scarlet",
@@ -152,8 +161,8 @@ Deno.serve(async (req) => {
     page.drawText(nameStr, { x: 40, y: height - 140, size: nameSize, font: fontBold, color: black });
     page.drawText("TALLERES REGISTRADOS", { x: 40, y: height - 170, size: 16, font: fontBold, color: black });
     
-    page.drawText(`• ${workshopDay1}`, { x: 50, y: height - 195, size: 12, font: fontItalic, color: black });
-    page.drawText(`• ${workshopDay2}`, { x: 50, y: height - 215, size: 12, font: fontItalic, color: black });
+    page.drawText(`• Día 1: ${workshopDay1}`, { x: 50, y: height - 195, size: 12, font: fontItalic, color: black });
+    page.drawText(`• Día 2: ${workshopDay2}`, { x: 50, y: height - 215, size: 12, font: fontItalic, color: black });
 
     const disclaimer = "Este es tu ticket de entrada al evento. Debes presentar este ticket (impreso o digital) al momento de ingresar. Puedes encontrar mas detalles del evento en nuestra pagina web. ¡Te esperamos!";
     page.drawText(disclaimer, { x: 100, y: 35, size: 8, font: fontItalic, color: gray, maxWidth: 450, lineHeight: 12 });

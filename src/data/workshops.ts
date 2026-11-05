@@ -3,6 +3,8 @@ export type Workshop = {
   name: string;
   nameDay1?: string;
   nameDay2?: string;
+  hideOnDay1?: boolean;
+  hideOnDay2?: boolean;
   limit: number | null; // null means unlimited
   category: string;
 };
@@ -11,14 +13,16 @@ export const workshops: Workshop[] = [
   {
     id: "taller-1",
     category: "ADOLESCENTES",
-    name:
-      "1.- Lo que tu hijo calla, pero su corazón y su celular revelan / Saida",
+    name: "1.- Taller 1 (Adolescentes / Saida)",
+    nameDay1: "1.- Lo que tu hijo calla, pero su corazón y su celular revelan / Saida",
+    nameDay2: "1.- ¿Quién soy yo cuando nadie me ve? / Saida",
     limit: 40,
   },
   {
     id: "taller-2",
     category: "ADOLESCENTES",
     name: "2.- Ilusión que parece amor / Dayci",
+    hideOnDay2: true, // No longer available on Friday
     limit: 40,
   },
   {
