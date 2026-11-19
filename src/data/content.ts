@@ -11,15 +11,15 @@ import { FaMoneyBill1Wave } from "react-icons/fa6";
 
 export const navLinks = [
   { label: "Inicio", href: "#inicio" },
-  // { label: "Conferencia", href: "#conferencia" },
-  // { label: "Expositores", href: "#expositores" },
-  // { label: "Programa", href: "#programa" },
-  { label: "Materiales", href: "#materiales" },
+  { label: "Conferencia", href: "#conferencia" },
+  { label: "Expositores", href: "#expositores" },
+  { label: "Programa", href: "#programa" },
+  // { label: "Materiales", href: "#materiales" },
   // { label: `FAQ's`, href: '#faqs' },
-  // { label: 'Sponsors', href: '#sponsors' },
-  // { label: "Contacto", href: "#contacto" },
-  // { label: "Equipo", href: "#equipo" },
-  // { label: "Hoteles", href: "#hoteles" },
+  // { label: "Sponsors", href: "#sponsors" },
+  { label: "Contacto", href: "#contacto" },
+  { label: "Equipo", href: "#equipo" },
+  { label: "Hoteles", href: "#hoteles" },
 ] as const;
 
 export const stats = [
